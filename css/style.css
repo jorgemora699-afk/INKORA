@@ -287,6 +287,9 @@ button {
     background-position: center;
 
     background-attachment: fixed;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .hero-overlay {
@@ -456,7 +459,9 @@ button {
 ===================================================== */
 
 .portfolio {
-    background: var(--color-bg);
+    background: #111111;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .portfolio-filters {
@@ -570,7 +575,7 @@ button {
 ===================================================== */
 
 .artist {
-    background: var(--color-bg-soft);
+    background: #000000; 
 }
 
 .artist-container {
@@ -662,7 +667,9 @@ button {
 ===================================================== */
 
 .styles {
-    background: var(--color-bg);
+    background: #161616;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .styles-list {
@@ -732,6 +739,8 @@ button {
 
 .process {
     background: var(--color-bg-soft);
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .process-grid {
@@ -802,6 +811,9 @@ button {
     color: var(--color-bg);
 
     overflow: hidden;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .contact-container {
