@@ -835,4 +835,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+    /* =====================================================
+    MENÚ MÓVIL
+    ===================================================== */
+
+    const menuButton = document.querySelector(".menu-button");
+    const navMenu = document.querySelector(".nav-menu");
+
+    menuButton.addEventListener("click", () => {
+
+        menuButton.classList.toggle("active");
+        navMenu.classList.toggle("mobile-active");
+        document.body.classList.toggle("menu-open");
+
+    });
+
+    // Cierra el menú al hacer clic en un enlace
+    navMenu.querySelectorAll("a").forEach(link => {
+
+        link.addEventListener("click", () => {
+
+            menuButton.classList.remove("active");
+            navMenu.classList.remove("mobile-active");
+            document.body.classList.remove("menu-open");
+
+        });
+
+    });
+
 });

@@ -280,8 +280,7 @@ button {
             rgba(0, 0, 0, 0.85) 0%,
             rgba(0, 0, 0, 0.55) 45%,
             rgba(0, 0, 0, 0.25) 100%
-        ),
-        url("../images/hero.jpg");
+        );
 
     background-size: cover;
 
@@ -583,6 +582,7 @@ button {
     gap: 100px;
 
     align-items: center;
+    
 }
 
 .artist-image {
@@ -1028,13 +1028,13 @@ button {
     }
 
     .hero {
-        min-height: 100svh;
-
+        min-height: auto;
+        padding: 80px 0 100px;
         background-position: 60% center;
     }
 
     .hero-content {
-        padding-top: 50px;
+        padding-top: 15px;
     }
 
     .hero h1 {
@@ -1070,6 +1070,7 @@ button {
         overflow-x: auto;
 
         padding-bottom: 15px;
+
     }
 
     .filter {
@@ -1084,6 +1085,7 @@ button {
         grid-auto-rows: 400px;
 
         gap: 10px;
+        
     }
 
     .portfolio-item:nth-child(n) {
@@ -1091,14 +1093,27 @@ button {
         grid-row: span 1;
     }
 
+
     .artist-container {
         grid-template-columns: 1fr;
-
         gap: 50px;
+    }
+
+    .artist-content {
+        order: 1;
+    }
+
+    .artist-image {
+        order: 2;
     }
 
     .artist-image {
         height: 500px;
+    }
+
+    .artist-image img,
+    .portfolio-item img {
+        object-fit: cover;
     }
 
     .artist-stats {
@@ -2004,3 +2019,48 @@ button {
 
 
 
+
+/* =====================================================
+   MENÚ MÓVIL
+===================================================== */
+
+.nav-menu.mobile-active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(10px);
+
+    gap: 35px;
+
+    z-index: 999;
+}
+
+.nav-menu.mobile-active a {
+    font-size: 18px;
+}
+
+.menu-button.active span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.menu-button.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-button.active span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+.menu-button span {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+body.menu-open {
+    overflow: hidden;
+}
