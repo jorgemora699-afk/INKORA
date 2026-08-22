@@ -1095,20 +1095,40 @@ button {
 
 
     .artist-container {
-        grid-template-columns: 1fr;
-        gap: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 30px;
     }
 
+    .artist-image,
     .artist-content {
+        display: contents;
+    }
+
+    .artist-content .section-label {
         order: 1;
     }
 
-    .artist-image {
+    .artist-content h2 {
         order: 2;
     }
 
+    .artist-image img {
+        order: 3;
+    }
+
+    .artist-content p:not(.section-label) {
+        order: 4;
+    }
+
+    .artist-content .artist-stats {
+        order: 5;
+        margin-top: 20px;
+    }
+
     .artist-image {
-        height: 500px;
+        height: 320px;
     }
 
     .artist-image img,
