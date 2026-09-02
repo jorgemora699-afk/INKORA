@@ -879,6 +879,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+    const menuCloseButton = document.querySelector(".menu-close");
+
+    if (menuCloseButton) {
+
+        menuCloseButton.addEventListener("click", () => {
+
+            menuButton.classList.remove("active");
+            navMenu.classList.remove("mobile-active");
+            document.body.classList.remove("menu-open");
+
+        });
+
+    }
+
     // Cierra el menú al hacer clic en un enlace
     navMenu.querySelectorAll("a").forEach(link => {
 

@@ -1053,14 +1053,12 @@ button {
 
     .hero {
         min-height: auto;
-        padding: 80px 0 100px;
+        padding: 70px 0 70px;
         background-position: 60% center;
-        padding-top: 10px;
-        padding-bottom: 10px;
     }
 
     .hero-content {
-        padding-top: 15px;
+        padding-top: 0;
     }
 
     .hero h1 {
@@ -2364,6 +2362,77 @@ body.menu-open {
 
     .care-list {
         grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =====================================================
+   ÍCONO ADMIN Y CIERRE — MENÚ MÓVIL
+===================================================== */
+
+.menu-close {
+    display: none;
+}
+
+.admin-icon-mobile {
+    display: none;
+}
+
+body.menu-open .navbar {
+    background: #0a0a0a;
+}
+
+@media (max-width: 900px) {
+
+    .admin-icon {
+        display: none;
+    }
+
+    .menu-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        top: 25px;
+        right: 25px;
+
+        width: 40px;
+        height: 40px;
+
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+
+        color: white;
+        font-size: 24px;
+        font-weight: 300;
+
+        cursor: pointer;
+
+        transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .menu-close:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+
+    .nav-menu.mobile-active .admin-icon-mobile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        color: var(--color-accent);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+
+        margin-top: 15px;
+        padding-top: 25px;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
     }
 
 }
