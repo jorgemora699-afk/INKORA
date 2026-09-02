@@ -476,6 +476,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    /* =====================================================
+    CUIDADOS — PESTAÑAS
+    ===================================================== */
+
+    const careTabs = document.querySelectorAll(".care-tab");
+    const carePanels = document.querySelectorAll(".care-panel");
+
+    careTabs.forEach(tab => {
+
+        tab.addEventListener("click", () => {
+
+            const phase = tab.dataset.phase;
+
+            careTabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            carePanels.forEach(panel => {
+
+                panel.classList.toggle(
+                    "active",
+                    panel.dataset.phase === phase
+                );
+
+            });
+
+        });
+
+    });
+
 
     /* =================================================
        PROTECCIÓN HTML
