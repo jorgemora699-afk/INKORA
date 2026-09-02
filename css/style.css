@@ -224,6 +224,29 @@ button {
         color var(--transition);
 }
 
+.admin-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    color: rgba(255, 255, 255, 0.6);
+
+    transition:
+        border-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.admin-icon:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
 .nav-button:hover {
     background: var(--color-white);
 
