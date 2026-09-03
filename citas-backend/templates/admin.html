@@ -633,6 +633,28 @@
             const telLink = document.getElementById("detalleTelefono");
             const telLimpio = (props.telefono || "").replace(/\D/g, "");
             telLink.textContent = props.telefono || "—";
+
+            if (telLimpio) {
+
+                const fechaCita = new Date(event.start);
+                const fechaTexto = fechaCita.toLocaleDateString("es-CO", {
+                    weekday: "long", day: "numeric", month: "long"
+                });
+                const horaTexto = fechaCita.toLocaleTimeString("es-CO", {
+                    hour: "2-digit", minute: "2-digit"
+                });
+
+                const tipoTexto = props.tipo_cita === "tatuaje" ? "tu sesión de tatuaje" : "tu valoración";
+
+                const mensaje =
+                    `Hola ${event.title}, te confirmo ${tipoTexto} el ${fechaTexto} ` +
+                    `a las ${horaTexto}. ¡Nos vemos! 🖤`;
+
+                telLink.href = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
+
+            } else {
+                telLink.href = "#";
+            }
             telLink.href = telLimpio ? `https://wa.me/${telLimpio}` : "#";
 
             document.getElementById("detalleEmail").textContent = props.email || "—";

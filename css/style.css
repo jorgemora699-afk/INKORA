@@ -2549,3 +2549,34 @@ body.menu-open .navbar {
     }
 
 }
+
+.phone-input-row {
+    display: flex;
+    gap: 10px;
+}
+
+.phone-input-row select {
+    flex-shrink: 0;
+    width: 110px;
+    padding: 14px 10px;
+    background: #171717;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.phone-input-row input {
+    flex: 1;
+}
+
+@media (max-width: 480px) {
+    .phone-input-row {
+        flex-direction: column;
+    }
+
+    .phone-input-row select {
+        width: 100%;
+    }
+}

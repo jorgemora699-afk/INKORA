@@ -102,12 +102,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const tipo = document.getElementById("bookingTipo").value;
             const nombre = document.getElementById("bookingName").value.trim();
-            const telefono = document.getElementById("bookingPhone").value.trim();
+            const telefono = obtenerTelefonoCompleto();
             const email = document.getElementById("bookingEmail").value.trim();
             const idea = document.getElementById("bookingIdea").value.trim();
 
             if (!tipo || !nombre || !telefono) {
                 alert("Por favor completa el tipo de cita, tu nombre y tu WhatsApp.");
+                return;
+            }
+
+            if (telefono.length < 8) {
+                alert("Revisa tu número de WhatsApp, parece incompleto.");
                 return;
             }
 
@@ -185,6 +190,38 @@ document.addEventListener("DOMContentLoaded", () => {
     revealElements.forEach(el => {
         revealObserver.observe(el);
     });
+
+    /* =====================================================
+    CÓDIGO DE PAÍS
+    ===================================================== */
+
+    const bookingCountryCode = document.getElementById("bookingCountryCode");
+    const bookingCountryCodeManual = document.getElementById("bookingCountryCodeManual");
+
+    if (bookingCountryCode) {
+
+        bookingCountryCode.addEventListener("change", () => {
+
+            bookingCountryCodeManual.style.display =
+                bookingCountryCode.value === "otro" ? "block" : "none";
+
+        });
+
+    }
+
+    function obtenerTelefonoCompleto() {
+
+        const numero = document.getElementById("bookingPhone").value.replace(/\D/g, "");
+
+        let codigoPais = bookingCountryCode.value;
+
+        if (codigoPais === "otro") {
+            codigoPais = bookingCountryCodeManual.value.replace(/\D/g, "");
+        }
+
+        return codigoPais + numero;
+
+    }
 
     /* =====================================================
        MENÚ MÓVIL
