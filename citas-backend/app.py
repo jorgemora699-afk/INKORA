@@ -1,18 +1,33 @@
 import os
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_login import (
     LoginManager, login_user, logout_user, login_required, current_user
 )
+from flask_cors import CORS
 
 from models import db, Usuario, Cita
+
+
+# =============================================================
+# CONFIGURACIÓN DEL HORARIO DE ATENCIÓN
+# Cambia estos valores si Daniel ajusta sus horarios más adelante.
+# =============================================================
+
+HORA_APERTURA = time(10, 0)
+HORA_CIERRE = time(19, 0)
+DURACION_CITA_MINUTOS = 30
 
 
 def create_app():
     app = Flask(__name__)
 
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "cambia-esto-en-produccion")
+
+    # Habilita CORS solo para las rutas /api/* (el panel admin no lo necesita,
+    # se visita directo en el dominio de Railway, no vía fetch cross-origin)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     database_url = os.environ.get("DATABASE_URL", "sqlite:///citas.db")
     # Railway a veces da la URL como postgres:// en vez de postgresql://
@@ -73,6 +88,51 @@ def create_app():
     # =========================================================
     # API — CITAS
     # =========================================================
+
+    @app.route("/api/citas/disponibilidad", methods=["GET"])
+    def disponibilidad():
+        """
+        Endpoint público: devuelve los horarios libres para una fecha dada.
+        Uso: GET /api/citas/disponibilidad?fecha=2026-09-15
+        """
+        fecha_str = request.args.get("fecha")
+
+        if not fecha_str:
+            return jsonify({"error": "Falta el parámetro 'fecha'."}), 400
+
+        try:
+            fecha_obj = date.fromisoformat(fecha_str)
+        except ValueError:
+            return jsonify({"error": "Formato de fecha inválido, usa YYYY-MM-DD."}), 400
+
+        if fecha_obj < date.today():
+            return jsonify({"disponibilidad": []})
+
+        # Genera todos los horarios posibles del día según apertura/cierre
+        slots = []
+        actual = datetime.combine(fecha_obj, HORA_APERTURA)
+        cierre = datetime.combine(fecha_obj, HORA_CIERRE)
+
+        while actual + timedelta(minutes=DURACION_CITA_MINUTOS) <= cierre:
+            slots.append(actual.time())
+            actual += timedelta(minutes=DURACION_CITA_MINUTOS)
+
+        # Si es hoy, quita los horarios que ya pasaron
+        if fecha_obj == date.today():
+            ahora = datetime.now().time()
+            slots = [s for s in slots if s > ahora]
+
+        # Quita los horarios ya ocupados (cualquier cita no cancelada)
+        ocupados = {
+            c.hora for c in Cita.query.filter_by(fecha=fecha_obj)
+            .filter(Cita.estado != "cancelada").all()
+        }
+
+        disponibles = [s for s in slots if s not in ocupados]
+
+        return jsonify({
+            "disponibilidad": [s.strftime("%H:%M") for s in disponibles]
+        })
 
     @app.route("/api/citas", methods=["POST"])
     def crear_cita_publica():
@@ -168,6 +228,14 @@ def create_app():
             cita.estado = data["estado"]
         if "notas" in data:
             cita.notas = data["notas"]
+        if "nombre_cliente" in data:
+            cita.nombre_cliente = data["nombre_cliente"]
+        if "telefono" in data:
+            cita.telefono = data["telefono"]
+        if "email" in data:
+            cita.email = data["email"]
+        if "idea" in data:
+            cita.idea = data["idea"]
         if "fecha" in data:
             cita.fecha = date.fromisoformat(data["fecha"])
         if "hora" in data:

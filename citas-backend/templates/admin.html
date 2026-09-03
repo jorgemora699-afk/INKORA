@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin — Citas</title>
+    <title>Panel Admin — Calendario de citas</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
     <style>
         :root {
             --color-bg: #0a0a0a;
             --color-bg-soft: #111111;
+            --color-bg-light: #171717;
             --color-white: #f5f5f5;
             --color-text: #c8c8c8;
             --color-muted: #777777;
@@ -29,29 +32,28 @@
             background: var(--color-bg);
             color: var(--color-white);
             font-family: var(--font-body);
-            padding: 50px 30px;
+            padding: 40px 30px 80px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            max-width: 1000px;
-            margin: 0 auto 40px;
+            max-width: 1100px;
+            margin: 0 auto 35px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         h1 {
             font-family: var(--font-display);
-            font-size: 42px;
+            font-size: 40px;
             font-weight: 400;
         }
 
         h1 em { font-style: italic; color: var(--color-muted); }
 
-        header p {
-            color: var(--color-muted);
-            font-size: 12px;
-        }
+        header p { color: var(--color-muted); font-size: 12px; margin-top: 4px; }
 
         header a {
             color: var(--color-accent);
@@ -60,49 +62,179 @@
             letter-spacing: 0.05em;
         }
 
-        .wrap {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .wrap { max-width: 1100px; margin: 0 auto; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        /* =====================================================
+           OVERRIDES DE FULLCALENDAR PARA TEMA OSCURO
+        ===================================================== */
+
+        #calendar {
+            --fc-border-color: rgba(255, 255, 255, 0.1);
+            --fc-page-bg-color: var(--color-bg-soft);
+            --fc-neutral-bg-color: var(--color-bg-light);
+            --fc-list-event-hover-bg-color: var(--color-bg-light);
+            --fc-today-bg-color: rgba(197, 164, 109, 0.08);
+            --fc-event-bg-color: var(--color-accent);
+            --fc-event-border-color: var(--color-accent);
+            --fc-event-text-color: var(--color-bg);
+            --fc-button-bg-color: var(--color-bg-light);
+            --fc-button-border-color: rgba(255, 255, 255, 0.15);
+            --fc-button-hover-bg-color: var(--color-accent);
+            --fc-button-hover-border-color: var(--color-accent);
+            --fc-button-active-bg-color: var(--color-accent);
+            --fc-button-text-color: var(--color-white);
+            background: var(--color-bg-soft);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
             font-size: 13px;
         }
 
-        th, td {
-            text-align: left;
-            padding: 14px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        #calendar .fc-toolbar-title {
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: 24px;
+            color: var(--color-white);
         }
 
-        th {
-            color: var(--color-muted);
+        #calendar .fc-col-header-cell-cushion,
+        #calendar .fc-daygrid-day-number {
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        #calendar .fc-button {
+            text-transform: uppercase;
             font-size: 10px;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            box-shadow: none !important;
+        }
+
+        #calendar .fc-event {
+            cursor: pointer;
+            font-size: 11px;
+            padding: 1px 3px;
+        }
+
+        .fc-event-manual {
+            --fc-event-bg-color: #6c7a89 !important;
+            --fc-event-border-color: #6c7a89 !important;
+        }
+
+        .fc-event-cancelada {
+            --fc-event-bg-color: rgba(255, 255, 255, 0.15) !important;
+            --fc-event-border-color: rgba(255, 255, 255, 0.15) !important;
+            text-decoration: line-through;
+        }
+
+        .fc-event-confirmada {
+            --fc-event-bg-color: #7fce9d !important;
+            --fc-event-border-color: #7fce9d !important;
+        }
+
+        /* =====================================================
+           MODAL
+        ===================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            width: min(90%, 440px);
+            max-height: 85vh;
+            overflow-y: auto;
+            background: var(--color-bg-soft);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 40px;
+        }
+
+        .modal-box h2 {
+            font-family: var(--font-display);
+            font-size: 30px;
+            font-weight: 400;
+            margin-bottom: 25px;
+        }
+
+        .modal-row { margin-bottom: 18px; }
+
+        .modal-row label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        .modal-row p,
+        .modal-row a {
+            font-size: 14px;
+            color: var(--color-white);
+            text-decoration: none;
+        }
+
+        .modal-row a { color: var(--color-accent); }
+
+        .modal-row input,
+        .modal-row select,
+        .modal-row textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #171717;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--color-white);
+            font-family: var(--font-body);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .modal-row select { cursor: pointer; }
+        .modal-row textarea { resize: vertical; min-height: 60px; }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            font-size: 10px;
+            font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            font-weight: 600;
+            cursor: pointer;
+            border: none;
         }
 
-        .estado {
-            display: inline-block;
-            padding: 4px 10px;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .btn-primary { background: var(--color-white); color: var(--color-bg); }
+        .btn-primary:hover { background: var(--color-accent); }
+
+        .btn-danger {
+            background: transparent;
+            color: #e28f8f;
+            border: 1px solid rgba(220, 80, 80, 0.4);
         }
+        .btn-danger:hover { background: rgba(220, 80, 80, 0.12); }
 
-        .estado-pendiente { background: rgba(197, 164, 109, 0.15); color: var(--color-accent); }
-        .estado-confirmada { background: rgba(90, 180, 120, 0.15); color: #7fce9d; }
-        .estado-cancelada { background: rgba(255, 255, 255, 0.06); color: var(--color-muted); }
-
-        .empty {
-            padding: 60px 0;
-            text-align: center;
+        .btn-ghost {
+            background: transparent;
             color: var(--color-muted);
-            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
+        .btn-ghost:hover { color: var(--color-white); border-color: rgba(255, 255, 255, 0.3); }
     </style>
 </head>
 <body>
@@ -116,66 +248,258 @@
     </header>
 
     <div class="wrap">
-
-        <table id="tablaCitas">
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>WhatsApp</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Idea</th>
-                    <th>Origen</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpoTabla"></tbody>
-        </table>
-
-        <div class="empty" id="estadoVacio" style="display: none;">
-            Todavía no hay citas agendadas.
-        </div>
-
+        <div id="calendar"></div>
     </div>
 
+
+    <!-- ============ MODAL: DETALLE DE CITA ============ -->
+
+    <div class="modal-overlay" id="modalDetalle">
+        <div class="modal-box">
+
+            <h2>Detalle de la cita</h2>
+
+            <div class="modal-row">
+                <label>Cliente</label>
+                <p id="detalleNombre"></p>
+            </div>
+
+            <div class="modal-row">
+                <label>WhatsApp</label>
+                <a id="detalleTelefono" href="#" target="_blank"></a>
+            </div>
+
+            <div class="modal-row">
+                <label>Correo</label>
+                <p id="detalleEmail"></p>
+            </div>
+
+            <div class="modal-row">
+                <label>Fecha y hora</label>
+                <p id="detalleFechaHora"></p>
+            </div>
+
+            <div class="modal-row">
+                <label>Idea del tatuaje</label>
+                <p id="detalleIdea"></p>
+            </div>
+
+            <div class="modal-row">
+                <label>Estado</label>
+                <select id="detalleEstado">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
+                <label>Notas internas</label>
+                <textarea id="detalleNotas" placeholder="Notas privadas sobre esta cita..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="btnEliminarCita">Eliminar</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-ghost" id="btnCerrarDetalle">Cerrar</button>
+                    <button class="btn btn-primary" id="btnGuardarDetalle">Guardar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ============ MODAL: CREAR CITA MANUAL ============ -->
+
+    <div class="modal-overlay" id="modalCrear">
+        <div class="modal-box">
+
+            <h2>Nueva cita manual</h2>
+
+            <div class="modal-row">
+                <label>Fecha</label>
+                <input type="date" id="crearFecha">
+            </div>
+
+            <div class="modal-row">
+                <label>Hora</label>
+                <input type="time" id="crearHora">
+            </div>
+
+            <div class="modal-row">
+                <label>Nombre del cliente *</label>
+                <input type="text" id="crearNombre" placeholder="Nombre completo">
+            </div>
+
+            <div class="modal-row">
+                <label>WhatsApp</label>
+                <input type="tel" id="crearTelefono" placeholder="300 123 4567">
+            </div>
+
+            <div class="modal-row">
+                <label>Idea / notas</label>
+                <textarea id="crearIdea" placeholder="¿Qué se va a tatuar?"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <div></div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-ghost" id="btnCerrarCrear">Cancelar</button>
+                    <button class="btn btn-primary" id="btnGuardarCrear">Crear cita</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
     <script>
-        async function cargarCitas() {
+        let citaSeleccionadaId = null;
 
-            const respuesta = await fetch("/api/admin/citas");
-            const citas = await respuesta.json();
+        const calendarEl = document.getElementById("calendar");
 
-            const cuerpo = document.getElementById("cuerpoTabla");
-            const vacio = document.getElementById("estadoVacio");
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: "dayGridMonth",
+            locale: "es",
+            height: "auto",
+            headerToolbar: {
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek",
+            },
+            buttonText: {
+                today: "Hoy",
+                month: "Mes",
+                week: "Semana",
+            },
+            events: "/api/admin/citas",
 
-            if (citas.length === 0) {
-                vacio.style.display = "block";
-                return;
-            }
+            eventClassNames(arg) {
+                const props = arg.event.extendedProps;
+                if (props.estado === "cancelada") return ["fc-event-cancelada"];
+                if (props.estado === "confirmada") return ["fc-event-confirmada"];
+                if (!props.creada_por_cliente) return ["fc-event-manual"];
+                return [];
+            },
 
-            citas.forEach(cita => {
+            eventClick(info) {
+                abrirDetalle(info.event);
+            },
 
-                const props = cita.extendedProps;
-                const [fecha, hora] = cita.start.split("T");
+            dateClick(info) {
+                abrirCrear(info.dateStr);
+            },
+        });
 
-                const fila = document.createElement("tr");
+        calendar.render();
 
-                fila.innerHTML = `
-                    <td>${cita.title}</td>
-                    <td>${props.telefono || "—"}</td>
-                    <td>${fecha}</td>
-                    <td>${hora}</td>
-                    <td>${props.idea || "—"}</td>
-                    <td>${props.creada_por_cliente ? "Cliente (web)" : "Manual"}</td>
-                    <td><span class="estado estado-${props.estado}">${props.estado}</span></td>
-                `;
 
-                cuerpo.appendChild(fila);
+        /* ============ DETALLE DE CITA ============ */
 
-            });
+        function abrirDetalle(event) {
+
+            citaSeleccionadaId = event.id;
+            const props = event.extendedProps;
+
+            document.getElementById("detalleNombre").textContent = event.title;
+
+            const telLink = document.getElementById("detalleTelefono");
+            const telLimpio = (props.telefono || "").replace(/\D/g, "");
+            telLink.textContent = props.telefono || "—";
+            telLink.href = telLimpio ? `https://wa.me/${telLimpio}` : "#";
+
+            document.getElementById("detalleEmail").textContent = props.email || "—";
+
+            const fecha = new Date(event.start);
+            document.getElementById("detalleFechaHora").textContent =
+                fecha.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" }) +
+                " · " +
+                fecha.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+
+            document.getElementById("detalleIdea").textContent = props.idea || "—";
+            document.getElementById("detalleEstado").value = props.estado || "pendiente";
+            document.getElementById("detalleNotas").value = props.notas || "";
+
+            document.getElementById("modalDetalle").classList.add("active");
 
         }
 
-        cargarCitas();
+        document.getElementById("btnCerrarDetalle").addEventListener("click", () => {
+            document.getElementById("modalDetalle").classList.remove("active");
+        });
+
+        document.getElementById("btnGuardarDetalle").addEventListener("click", async () => {
+
+            const estado = document.getElementById("detalleEstado").value;
+            const notas = document.getElementById("detalleNotas").value;
+
+            await fetch(`/api/admin/citas/${citaSeleccionadaId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ estado, notas }),
+            });
+
+            document.getElementById("modalDetalle").classList.remove("active");
+            calendar.refetchEvents();
+
+        });
+
+        document.getElementById("btnEliminarCita").addEventListener("click", async () => {
+
+            if (!confirm("¿Eliminar esta cita? Esta acción no se puede deshacer.")) return;
+
+            await fetch(`/api/admin/citas/${citaSeleccionadaId}`, { method: "DELETE" });
+
+            document.getElementById("modalDetalle").classList.remove("active");
+            calendar.refetchEvents();
+
+        });
+
+
+        /* ============ CREAR CITA MANUAL ============ */
+
+        function abrirCrear(fechaStr) {
+
+            document.getElementById("crearFecha").value = fechaStr;
+            document.getElementById("crearHora").value = "10:00";
+            document.getElementById("crearNombre").value = "";
+            document.getElementById("crearTelefono").value = "";
+            document.getElementById("crearIdea").value = "";
+
+            document.getElementById("modalCrear").classList.add("active");
+
+        }
+
+        document.getElementById("btnCerrarCrear").addEventListener("click", () => {
+            document.getElementById("modalCrear").classList.remove("active");
+        });
+
+        document.getElementById("btnGuardarCrear").addEventListener("click", async () => {
+
+            const nombre = document.getElementById("crearNombre").value.trim();
+
+            if (!nombre) {
+                alert("Ingresa el nombre del cliente.");
+                return;
+            }
+
+            await fetch("/api/admin/citas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre_cliente: nombre,
+                    telefono: document.getElementById("crearTelefono").value.trim(),
+                    fecha: document.getElementById("crearFecha").value,
+                    hora: document.getElementById("crearHora").value,
+                    idea: document.getElementById("crearIdea").value.trim(),
+                }),
+            });
+
+            document.getElementById("modalCrear").classList.remove("active");
+            calendar.refetchEvents();
+
+        });
     </script>
 
 </body>

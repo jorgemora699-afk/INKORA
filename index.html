@@ -48,6 +48,7 @@
                 <a href="#artista">Sobre mí</a>
                 <a href="#proceso">Proceso</a>
                 <a href="#cuidados">Cuidados</a>
+                <a href="#agendar">Agendar</a>
                 <a href="#contacto">Contacto</a>
 
                 <a href="https://inkora-production.up.railway.app/login" class="admin-icon-mobile" aria-label="Acceso administrador">
@@ -571,6 +572,95 @@
                     <a href="assets/cuidados-tatuaje.pdf" download class="secondary-button">
                         ⬇ Descargar guía en PDF
                     </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+            AGENDAR VALORACIÓN
+        ========================== -->
+
+        <section class="booking section" id="agendar">
+
+            <div class="container">
+
+                <div class="section-header reveal">
+
+                    <div>
+                        <p class="section-label">
+                            AGENDA TU CITA
+                        </p>
+
+                        <h2>
+                            Reserva tu<br>
+                            <em>valoración.</em>
+                        </h2>
+                    </div>
+
+                    <p class="section-description">
+                        Agenda una cita presencial para hablar de tu idea,
+                        resolver dudas y definir los detalles antes de tatuarte.
+                    </p>
+
+                </div>
+
+
+                <div class="booking-box reveal">
+
+                    <div class="booking-step" id="bookingStep1">
+
+                        <div class="form-group">
+                            <label for="bookingDate">Elige una fecha</label>
+                            <input type="date" id="bookingDate" name="bookingDate">
+                        </div>
+
+                        <div class="booking-slots" id="bookingSlots">
+                            <p class="booking-hint">Selecciona una fecha para ver horarios disponibles.</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-step" id="bookingStep2" style="display: none;">
+
+                        <p class="booking-selected" id="bookingSelectedInfo"></p>
+
+                        <div class="form-group">
+                            <label for="bookingName">Nombre completo *</label>
+                            <input type="text" id="bookingName" placeholder="Tu nombre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingPhone">WhatsApp / Celular *</label>
+                            <input type="tel" id="bookingPhone" placeholder="300 123 4567" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingEmail">Correo electrónico</label>
+                            <input type="email" id="bookingEmail" placeholder="tucorreo@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingIdea">¿Qué quieres tatuarte?</label>
+                            <textarea id="bookingIdea" rows="3" placeholder="Cuéntanos brevemente tu idea..."></textarea>
+                        </div>
+
+                        <div class="booking-actions">
+                            <button type="button" class="secondary-button" id="bookingBack">Atrás</button>
+                            <button type="button" class="primary-button" id="bookingConfirm">Confirmar cita</button>
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-step" id="bookingSuccess" style="display: none;">
+                        <div class="confirmation-icon">✓</div>
+                        <h3>¡Cita confirmada!</h3>
+                        <p id="bookingSuccessMessage"></p>
+                    </div>
 
                 </div>
 
