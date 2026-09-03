@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Agenda tu cita — Daniel Tatto Ink"
+    >
+
+    <title>Agendar cita — Daniel Tatto Ink</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVEGACIÓN
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="container navbar-container">
+
+            <a href="index.html" class="logo">
+                DANIEL TATTO INK
+            </a>
+
+            <nav class="nav-menu">
+
+                <button class="menu-close" aria-label="Cerrar menú">×</button>
+
+                <a href="index.html#trabajos">Trabajos</a>
+                <a href="index.html#estilos">Estilos</a>
+                <a href="index.html#artista">Sobre mí</a>
+                <a href="index.html#proceso">Proceso</a>
+                <a href="index.html#cuidados">Cuidados</a>
+                <a href="agendar.html">Agendar</a>
+                <a href="index.html#contacto">Contacto</a>
+
+                <a href="https://inkora-production.up.railway.app/login" class="admin-icon-mobile" aria-label="Acceso administrador">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+                    </svg>
+                    <span>Admin</span>
+                </a>
+
+            </nav>
+
+            <a href="cotizar.html" class="nav-button">
+                Solicitar cotización
+            </a>
+
+            <a href="https://inkora-production.up.railway.app/login" class="admin-icon" aria-label="Acceso administrador">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+                </svg>
+            </a>
+
+            <button class="menu-button" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- =========================
+            AGENDAR VALORACIÓN
+        ========================== -->
+
+        <section class="booking section" id="agendar">
+
+            <div class="container">
+
+                <div class="section-header reveal">
+
+                    <div>
+                        <p class="section-label">
+                            AGENDA TU CITA
+                        </p>
+
+                        <h2>
+                            Reserva tu<br>
+                            <em>valoración.</em>
+                        </h2>
+                    </div>
+
+                    <p class="section-description">
+                        Agenda una cita presencial para hablar de tu idea,
+                        resolver dudas y definir los detalles antes de tatuarte.
+                    </p>
+
+                </div>
+
+
+                <div class="booking-box reveal">
+
+                    <div class="booking-step" id="bookingStep1">
+
+                        <div class="form-group">
+                            <label for="bookingDate">Elige una fecha</label>
+                            <input type="date" id="bookingDate" name="bookingDate">
+                        </div>
+
+                        <div class="booking-slots" id="bookingSlots">
+                            <p class="booking-hint">Selecciona una fecha para ver horarios disponibles.</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-step" id="bookingStep2" style="display: none;">
+
+                        <p class="booking-selected" id="bookingSelectedInfo"></p>
+
+                        <div class="form-group">
+                            <label for="bookingTipo">Tipo de cita *</label>
+                            <select id="bookingTipo" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="Valoración">Valoración</option>
+                                <option value="Sesión de tatuaje">Sesión de tatuaje</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingName">Nombre completo *</label>
+                            <input type="text" id="bookingName" placeholder="Tu nombre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingPhone">WhatsApp / Celular *</label>
+                            <input type="tel" id="bookingPhone" placeholder="300 123 4567" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingEmail">Correo electrónico</label>
+                            <input type="email" id="bookingEmail" placeholder="tucorreo@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingIdea">¿Qué quieres tatuarte?</label>
+                            <textarea id="bookingIdea" rows="3" placeholder="Cuéntanos brevemente tu idea..."></textarea>
+                        </div>
+
+                        <div class="booking-actions">
+                            <button type="button" class="secondary-button" id="bookingBack">Atrás</button>
+                            <button type="button" class="primary-button" id="bookingConfirm">Confirmar cita</button>
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-step" id="bookingSuccess" style="display: none;">
+                        <div class="confirmation-icon">✓</div>
+                        <h3>¡Cita confirmada!</h3>
+                        <p id="bookingSuccessMessage"></p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-logo">DANIEL TATTO INK</div>
+            <p>Sombras eternas a través del arte.</p>
+            <span>© 2026 Daniel Tatto Ink</span>
+        </div>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script src="js/agendar.js"></script>
+
+    <a
+        href="https://wa.me/573002389080?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20un%20tatuaje"
+        class="whatsapp-float"
+        target="_blank"
+        aria-label="Escríbeme por WhatsApp"
+    >
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="currentColor">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 5L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.11c-1.49 0-2.95-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.24 8.24 0 0 1-1.28-4.39c0-4.54 3.7-8.24 8.24-8.24 4.53 0 8.23 3.7 8.23 8.24 0 4.54-3.7 8.26-8.24 8.26zm4.52-6.19c-.25-.12-1.47-.72-1.69-.8-.23-.08-.39-.12-.56.12-.17.25-.64.8-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.48-.01-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.06 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.25 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.11-.23-.17-.48-.29z"/>
+        </svg>
+    </a>
+
+</body>
+</html>
