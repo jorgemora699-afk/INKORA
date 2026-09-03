@@ -40,7 +40,7 @@
             justify-content: space-between;
             align-items: flex-end;
             max-width: 1100px;
-            margin: 0 auto 35px;
+            margin: 0 auto 30px;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -55,7 +55,13 @@
 
         header p { color: var(--color-muted); font-size: 12px; margin-top: 4px; }
 
-        header a {
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-link {
             color: var(--color-accent);
             font-size: 11px;
             text-decoration: none;
@@ -63,6 +69,109 @@
         }
 
         .wrap { max-width: 1100px; margin: 0 auto; }
+
+        /* =====================================================
+           TARJETAS DE RESUMEN
+        ===================================================== */
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            padding: 20px 22px;
+            background: var(--color-bg-soft);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 34px;
+            font-weight: 400;
+            color: var(--color-white);
+        }
+
+        .stat-card span {
+            display: block;
+            margin-top: 4px;
+            color: var(--color-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .stat-card.accent strong { color: var(--color-accent); }
+
+        /* =====================================================
+           LEYENDA
+        ===================================================== */
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            background: var(--color-bg-soft);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-muted);
+            font-size: 11px;
+            letter-spacing: 0.03em;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
+
+        .legend-dot.dot-pendiente { background: var(--color-accent); }
+        .legend-dot.dot-confirmada { background: #7fce9d; }
+        .legend-dot.dot-cancelada { background: rgba(255, 255, 255, 0.25); }
+        .legend-dot.dot-manual { background: #6c7a89; }
+
+        /* =====================================================
+           BOTONES GENERALES
+        ===================================================== */
+
+        .btn {
+            padding: 12px 18px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary { background: var(--color-white); color: var(--color-bg); }
+        .btn-primary:hover { background: var(--color-accent); }
+
+        .btn-danger {
+            background: transparent;
+            color: #e28f8f;
+            border: 1px solid rgba(220, 80, 80, 0.4);
+        }
+        .btn-danger:hover { background: rgba(220, 80, 80, 0.12); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--color-muted);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .btn-ghost:hover { color: var(--color-white); border-color: rgba(255, 255, 255, 0.3); }
 
         /* =====================================================
            OVERRIDES DE FULLCALENDAR PARA TEMA OSCURO
@@ -94,6 +203,7 @@
             font-weight: 400;
             font-size: 24px;
             color: var(--color-white);
+            text-transform: capitalize;
         }
 
         #calendar .fc-col-header-cell-cushion,
@@ -108,12 +218,22 @@
             letter-spacing: 0.05em;
             font-weight: 600;
             box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
+        #calendar .fc-daygrid-day:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        #calendar .fc-day-today {
+            box-shadow: inset 0 0 0 1px rgba(197, 164, 109, 0.4);
         }
 
         #calendar .fc-event {
             cursor: pointer;
             font-size: 11px;
             padding: 1px 3px;
+            border-radius: 0;
         }
 
         .fc-event-manual {
@@ -162,6 +282,8 @@
             font-size: 30px;
             font-weight: 400;
             margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .modal-row { margin-bottom: 18px; }
@@ -198,6 +320,12 @@
             outline: none;
         }
 
+        .modal-row input:focus,
+        .modal-row select:focus,
+        .modal-row textarea:focus {
+            border-color: var(--color-accent);
+        }
+
         .modal-row select { cursor: pointer; }
         .modal-row textarea { resize: vertical; min-height: 60px; }
 
@@ -207,34 +335,26 @@
             align-items: center;
             gap: 10px;
             margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .btn {
-            padding: 12px 18px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            border: none;
-        }
+        @media (max-width: 600px) {
 
-        .btn-primary { background: var(--color-white); color: var(--color-bg); }
-        .btn-primary:hover { background: var(--color-accent); }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
 
-        .btn-danger {
-            background: transparent;
-            color: #e28f8f;
-            border: 1px solid rgba(220, 80, 80, 0.4);
-        }
-        .btn-danger:hover { background: rgba(220, 80, 80, 0.12); }
+            .legend-row {
+                gap: 14px;
+            }
 
-        .btn-ghost {
-            background: transparent;
-            color: var(--color-muted);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
         }
-        .btn-ghost:hover { color: var(--color-white); border-color: rgba(255, 255, 255, 0.3); }
     </style>
 </head>
 <body>
@@ -244,10 +364,37 @@
             <h1>Panel de <em>citas.</em></h1>
             <p>Sesión: {{ usuario }}</p>
         </div>
-        <a href="{{ url_for('logout') }}">Cerrar sesión →</a>
+
+        <div class="header-right">
+            <button class="btn btn-primary" id="btnNuevaCita">+ Nueva cita</button>
+            <a class="logout-link" href="{{ url_for('logout') }}">Cerrar sesión →</a>
+        </div>
     </header>
 
     <div class="wrap">
+
+        <div class="stats-row">
+            <div class="stat-card accent">
+                <strong id="statHoy">0</strong>
+                <span>Citas hoy</span>
+            </div>
+            <div class="stat-card">
+                <strong id="statPendientes">0</strong>
+                <span>Pendientes</span>
+            </div>
+            <div class="stat-card">
+                <strong id="statConfirmadas">0</strong>
+                <span>Confirmadas</span>
+            </div>
+        </div>
+
+        <div class="legend-row">
+            <div class="legend-item"><span class="legend-dot dot-pendiente"></span> Pendiente</div>
+            <div class="legend-item"><span class="legend-dot dot-confirmada"></span> Confirmada</div>
+            <div class="legend-item"><span class="legend-dot dot-cancelada"></span> Cancelada</div>
+            <div class="legend-item"><span class="legend-dot dot-manual"></span> Creada manualmente</div>
+        </div>
+
         <div id="calendar"></div>
     </div>
 
@@ -337,7 +484,7 @@
 
             <div class="modal-row">
                 <label>Hora</label>
-                <input type="time" id="crearHora">
+                <input type="time" id="crearHora" min="10:00" max="19:00" step="1800">
             </div>
 
             <div class="modal-row">
@@ -400,6 +547,7 @@
             initialView: "dayGridMonth",
             locale: "es",
             height: "auto",
+            firstDay: 1,
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
@@ -411,6 +559,14 @@
                 week: "Semana",
                 day: "Día",
             },
+
+            /* Horario visible en vistas de semana/día: 10am - 7pm */
+            slotMinTime: "10:00:00",
+            slotMaxTime: "19:00:00",
+            slotDuration: "00:30:00",
+            allDaySlot: false,
+            nowIndicator: true,
+
             events: "/api/admin/citas",
 
             eventClassNames(arg) {
@@ -428,9 +584,41 @@
             dateClick(info) {
                 abrirCrear(info.dateStr, info.date);
             },
+
+            eventsSet(events) {
+                actualizarResumen(events);
+            },
         });
 
         calendar.render();
+
+
+        /* ============ TARJETAS DE RESUMEN ============ */
+
+        function actualizarResumen(events) {
+
+            const hoy = new Date().toISOString().split("T")[0];
+
+            let citasHoy = 0;
+            let pendientes = 0;
+            let confirmadas = 0;
+
+            events.forEach(event => {
+
+                const fechaEvento = event.startStr.split("T")[0];
+                const estado = event.extendedProps.estado;
+
+                if (fechaEvento === hoy) citasHoy++;
+                if (estado === "pendiente") pendientes++;
+                if (estado === "confirmada") confirmadas++;
+
+            });
+
+            document.getElementById("statHoy").textContent = citasHoy;
+            document.getElementById("statPendientes").textContent = pendientes;
+            document.getElementById("statConfirmadas").textContent = confirmadas;
+
+        }
 
 
         /* ============ DETALLE DE CITA ============ */
@@ -535,6 +723,13 @@
             document.getElementById("modalCrear").classList.add("active");
 
         }
+
+        document.getElementById("btnNuevaCita").addEventListener("click", () => {
+
+            const hoy = new Date().toISOString().split("T")[0];
+            abrirCrear(hoy, new Date());
+
+        });
 
         document.getElementById("btnCerrarCrear").addEventListener("click", () => {
             document.getElementById("modalCrear").classList.remove("active");
