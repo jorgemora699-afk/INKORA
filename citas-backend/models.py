@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -45,6 +45,14 @@ class Cita(db.Model):
     idea = db.Column(db.Text, nullable=True)
     notas = db.Column(db.Text, nullable=True)
 
+    # valoracion | tatuaje
+    tipo_cita = db.Column(db.String(20), nullable=False, default="valoracion")
+
+    # Cuánto tiempo ocupa esta cita en el calendario, en minutos.
+    # Las que agenda el cliente desde la web usan la duración estándar (30 min).
+    # Las manuales las define el tatuador (ej. una sesión de tatuaje de varias horas).
+    duracion_minutos = db.Column(db.Integer, nullable=False, default=30)
+
     # pendiente | confirmada | cancelada
     estado = db.Column(db.String(20), nullable=False, default="pendiente")
 
@@ -55,16 +63,22 @@ class Cita(db.Model):
 
     def to_dict(self):
         """Formato que consume FullCalendar en el panel admin."""
+        inicio = datetime.combine(self.fecha, self.hora)
+        fin = inicio + timedelta(minutes=self.duracion_minutos)
+
         return {
             "id": self.id,
             "title": self.nombre_cliente,
-            "start": f"{self.fecha.isoformat()}T{self.hora.isoformat()}",
+            "start": inicio.isoformat(),
+            "end": fin.isoformat(),
             "extendedProps": {
                 "telefono": self.telefono,
                 "email": self.email,
                 "idea": self.idea,
                 "notas": self.notas,
                 "estado": self.estado,
+                "tipo_cita": self.tipo_cita,
+                "duracion_minutos": self.duracion_minutos,
                 "creada_por_cliente": self.creada_por_cliente,
             },
         }

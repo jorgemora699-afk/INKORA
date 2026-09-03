@@ -855,6 +855,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         fecha: bookingDate.value,
                         hora: horaSeleccionada,
                         idea: idea,
+                        tipo_cita: document.getElementById("bookingTipo").value,
                     }),
                 });
 

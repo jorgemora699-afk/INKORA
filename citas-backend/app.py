@@ -18,6 +18,32 @@ from models import db, Usuario, Cita
 HORA_APERTURA = time(10, 0)
 HORA_CIERRE = time(19, 0)
 DURACION_CITA_MINUTOS = 30
+TIPOS_CITA_VALIDOS = {"valoracion", "tatuaje"}
+
+
+def hay_solape(fecha_obj, hora_inicio, duracion_minutos, excluir_id=None):
+    """
+    Revisa si un horario propuesto choca con alguna cita ya existente
+    ese día, comparando RANGOS completos (inicio-fin), no solo la hora
+    exacta de inicio. Así una cita larga (ej. una sesión de tatuaje de
+    5 horas) bloquea correctamente todos los espacios que ocupa.
+    """
+    nuevo_inicio = datetime.combine(fecha_obj, hora_inicio)
+    nuevo_fin = nuevo_inicio + timedelta(minutes=duracion_minutos)
+
+    query = Cita.query.filter_by(fecha=fecha_obj).filter(Cita.estado != "cancelada")
+
+    if excluir_id:
+        query = query.filter(Cita.id != excluir_id)
+
+    for cita in query.all():
+        existente_inicio = datetime.combine(fecha_obj, cita.hora)
+        existente_fin = existente_inicio + timedelta(minutes=cita.duracion_minutos)
+
+        if nuevo_inicio < existente_fin and existente_inicio < nuevo_fin:
+            return True
+
+    return False
 
 
 def create_app():
@@ -122,13 +148,12 @@ def create_app():
             ahora = datetime.now().time()
             slots = [s for s in slots if s > ahora]
 
-        # Quita los horarios ya ocupados (cualquier cita no cancelada)
-        ocupados = {
-            c.hora for c in Cita.query.filter_by(fecha=fecha_obj)
-            .filter(Cita.estado != "cancelada").all()
-        }
-
-        disponibles = [s for s in slots if s not in ocupados]
+        # Quita los horarios que chocan con alguna cita existente,
+        # comparando el rango completo (no solo la hora exacta)
+        disponibles = [
+            s for s in slots
+            if not hay_solape(fecha_obj, s, DURACION_CITA_MINUTOS)
+        ]
 
         return jsonify({
             "disponibilidad": [s.strftime("%H:%M") for s in disponibles]
@@ -156,12 +181,12 @@ def create_app():
         except ValueError:
             return jsonify({"error": "Formato de fecha u hora inválido."}), 400
 
-        # Evita doble reserva en el mismo horario exacto
-        choque = Cita.query.filter_by(
-            fecha=fecha_obj, hora=hora_obj
-        ).filter(Cita.estado != "cancelada").first()
+        tipo_cita = data.get("tipo_cita", "valoracion")
+        if tipo_cita not in TIPOS_CITA_VALIDOS:
+            return jsonify({"error": "Tipo de cita inválido."}), 400
 
-        if choque:
+        # Evita que choque con cualquier cita existente (por rango completo)
+        if hay_solape(fecha_obj, hora_obj, DURACION_CITA_MINUTOS):
             return jsonify({"error": "Ese horario ya no está disponible."}), 409
 
         nueva_cita = Cita(
@@ -171,6 +196,8 @@ def create_app():
             fecha=fecha_obj,
             hora=hora_obj,
             idea=data.get("idea"),
+            tipo_cita=tipo_cita,
+            duracion_minutos=DURACION_CITA_MINUTOS,
             creada_por_cliente=True,
         )
 
@@ -198,6 +225,21 @@ def create_app():
         except (KeyError, ValueError):
             return jsonify({"error": "Fecha u hora inválida o faltante."}), 400
 
+        try:
+            duracion = int(data.get("duracion_minutos", DURACION_CITA_MINUTOS))
+        except (TypeError, ValueError):
+            duracion = DURACION_CITA_MINUTOS
+
+        if duracion <= 0:
+            duracion = DURACION_CITA_MINUTOS
+
+        tipo_cita = data.get("tipo_cita", "valoracion")
+        if tipo_cita not in TIPOS_CITA_VALIDOS:
+            tipo_cita = "valoracion"
+
+        if hay_solape(fecha_obj, hora_obj, duracion):
+            return jsonify({"error": "Ese horario choca con otra cita existente."}), 409
+
         nueva_cita = Cita(
             nombre_cliente=data.get("nombre_cliente", "Sin nombre"),
             telefono=data.get("telefono", ""),
@@ -206,6 +248,8 @@ def create_app():
             hora=hora_obj,
             idea=data.get("idea"),
             notas=data.get("notas"),
+            tipo_cita=tipo_cita,
+            duracion_minutos=duracion,
             creada_por_cliente=False,
         )
 
@@ -236,6 +280,13 @@ def create_app():
             cita.email = data["email"]
         if "idea" in data:
             cita.idea = data["idea"]
+        if "tipo_cita" in data and data["tipo_cita"] in TIPOS_CITA_VALIDOS:
+            cita.tipo_cita = data["tipo_cita"]
+        if "duracion_minutos" in data:
+            try:
+                cita.duracion_minutos = int(data["duracion_minutos"])
+            except (TypeError, ValueError):
+                pass
         if "fecha" in data:
             cita.fecha = date.fromisoformat(data["fecha"])
         if "hora" in data:

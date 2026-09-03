@@ -280,6 +280,19 @@
             </div>
 
             <div class="modal-row">
+                <label>Duración</label>
+                <p id="detalleDuracion"></p>
+            </div>
+
+            <div class="modal-row">
+                <label>Tipo de cita</label>
+                <select id="detalleTipo">
+                    <option value="valoracion">Valoración</option>
+                    <option value="tatuaje">Tatuaje</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
                 <label>Idea del tatuaje</label>
                 <p id="detalleIdea"></p>
             </div>
@@ -328,6 +341,30 @@
             </div>
 
             <div class="modal-row">
+                <label>Duración</label>
+                <select id="crearDuracion">
+                    <option value="30">30 minutos</option>
+                    <option value="60">1 hora</option>
+                    <option value="90">1 hora 30 min</option>
+                    <option value="120">2 horas</option>
+                    <option value="180">3 horas</option>
+                    <option value="240">4 horas</option>
+                    <option value="300">5 horas</option>
+                    <option value="360">6 horas</option>
+                    <option value="420">7 horas</option>
+                    <option value="480">8 horas (jornada completa)</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
+                <label>Tipo de cita</label>
+                <select id="crearTipo">
+                    <option value="valoracion">Valoración</option>
+                    <option value="tatuaje">Tatuaje</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
                 <label>Nombre del cliente *</label>
                 <input type="text" id="crearNombre" placeholder="Nombre completo">
             </div>
@@ -366,12 +403,13 @@
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
             },
             buttonText: {
                 today: "Hoy",
                 month: "Mes",
                 week: "Semana",
+                day: "Día",
             },
             events: "/api/admin/citas",
 
@@ -388,7 +426,7 @@
             },
 
             dateClick(info) {
-                abrirCrear(info.dateStr);
+                abrirCrear(info.dateStr, info.date);
             },
         });
 
@@ -419,7 +457,15 @@
 
             document.getElementById("detalleIdea").textContent = props.idea || "—";
             document.getElementById("detalleEstado").value = props.estado || "pendiente";
+            document.getElementById("detalleTipo").value = props.tipo_cita || "valoracion";
             document.getElementById("detalleNotas").value = props.notas || "";
+
+            const horas = Math.floor(props.duracion_minutos / 60);
+            const minutos = props.duracion_minutos % 60;
+            let duracionTexto = "";
+            if (horas > 0) duracionTexto += `${horas}h `;
+            if (minutos > 0 || horas === 0) duracionTexto += `${minutos}min`;
+            document.getElementById("detalleDuracion").textContent = duracionTexto.trim();
 
             document.getElementById("modalDetalle").classList.add("active");
 
@@ -433,12 +479,19 @@
 
             const estado = document.getElementById("detalleEstado").value;
             const notas = document.getElementById("detalleNotas").value;
+            const tipo_cita = document.getElementById("detalleTipo").value;
 
-            await fetch(`/api/admin/citas/${citaSeleccionadaId}`, {
+            const respuesta = await fetch(`/api/admin/citas/${citaSeleccionadaId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ estado, notas }),
+                body: JSON.stringify({ estado, notas, tipo_cita }),
             });
+
+            if (!respuesta.ok) {
+                const data = await respuesta.json();
+                alert(data.error || "No se pudo guardar.");
+                return;
+            }
 
             document.getElementById("modalDetalle").classList.remove("active");
             calendar.refetchEvents();
@@ -459,10 +512,22 @@
 
         /* ============ CREAR CITA MANUAL ============ */
 
-        function abrirCrear(fechaStr) {
+        function abrirCrear(fechaStr, dateObj) {
 
-            document.getElementById("crearFecha").value = fechaStr;
-            document.getElementById("crearHora").value = "10:00";
+            // En vista mes, dateStr es solo la fecha (YYYY-MM-DD).
+            // En vista semana/día, incluye también la hora exacta clickeada.
+            const fecha = fechaStr.split("T")[0];
+
+            const pad = (n) => String(n).padStart(2, "0");
+            const tieneHora = fechaStr.includes("T");
+            const hora = tieneHora
+                ? `${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`
+                : "10:00";
+
+            document.getElementById("crearFecha").value = fecha;
+            document.getElementById("crearHora").value = hora;
+            document.getElementById("crearDuracion").value = "30";
+            document.getElementById("crearTipo").value = "valoracion";
             document.getElementById("crearNombre").value = "";
             document.getElementById("crearTelefono").value = "";
             document.getElementById("crearIdea").value = "";
@@ -484,7 +549,7 @@
                 return;
             }
 
-            await fetch("/api/admin/citas", {
+            const respuesta = await fetch("/api/admin/citas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -492,9 +557,18 @@
                     telefono: document.getElementById("crearTelefono").value.trim(),
                     fecha: document.getElementById("crearFecha").value,
                     hora: document.getElementById("crearHora").value,
+                    duracion_minutos: document.getElementById("crearDuracion").value,
+                    tipo_cita: document.getElementById("crearTipo").value,
                     idea: document.getElementById("crearIdea").value.trim(),
                 }),
             });
+
+            const data = await respuesta.json();
+
+            if (!respuesta.ok) {
+                alert(data.error || "Ese horario choca con otra cita.");
+                return;
+            }
 
             document.getElementById("modalCrear").classList.remove("active");
             calendar.refetchEvents();
