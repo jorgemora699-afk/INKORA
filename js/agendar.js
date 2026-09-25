@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!respuesta.ok) {
                     alert(data.error || "Ese horario ya no está disponible, elige otro.");
                     bookingConfirm.disabled = false;
-                    bookingConfirm.textContent = "Confirmar cita";
+                    bookingConfirm.textContent = "Enviar solicitud";
                     return;
                 }
 
@@ -148,7 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     .toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" });
 
                 document.getElementById("bookingSuccessMessage").textContent =
-                    `Te esperamos el ${fechaFormateada} a las ${horaSeleccionada}. Te contactaremos por WhatsApp para confirmar.`;
+                    `Tu horario tentativo es el ${fechaFormateada} a las ${horaSeleccionada}. ` +
+                    `El tatuador se comunicará contigo por WhatsApp para confirmar la cita.`;
 
                 bookingStep2.style.display = "none";
                 bookingSuccess.style.display = "block";
@@ -156,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) {
                 alert("Hubo un error al agendar. Intenta de nuevo.");
                 bookingConfirm.disabled = false;
-                bookingConfirm.textContent = "Confirmar cita";
+                bookingConfirm.textContent = "Enviar solicitud";
             }
 
         });
