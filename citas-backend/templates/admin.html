@@ -429,6 +429,31 @@
             display: none;
         }
 
+        /* ---- Vista Agenda (lista) ---- */
+        #calendar .fc-list { border-color: rgba(255, 255, 255, 0.1); }
+
+        #calendar .fc-list-day-cushion {
+            background: var(--color-bg-light);
+        }
+
+        #calendar .fc-list-day-text,
+        #calendar .fc-list-day-side-text {
+            color: var(--color-white);
+            font-family: var(--font-display);
+            font-size: 16px;
+            text-transform: capitalize;
+            text-decoration: none;
+        }
+
+        #calendar .fc-list-event td {
+            border-color: rgba(255, 255, 255, 0.06);
+            color: var(--color-text);
+        }
+
+        #calendar .fc-list-event-time { color: var(--color-muted); }
+        #calendar .fc-list-event-title { color: var(--color-white); }
+        #calendar .fc-list-empty { background: var(--color-bg-soft); color: var(--color-muted); }
+
         /* Tooltip */
         .fc-tooltip {
             position: fixed;
@@ -940,7 +965,7 @@
         const calendarEl = document.getElementById("calendar");
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: "dayGridMonth",
+            initialView: window.innerWidth < 700 ? "listWeek" : "dayGridMonth",
             locale: "es",
             height: "auto",
             firstDay: 1,
@@ -950,13 +975,14 @@
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
             },
             buttonText: {
                 today: "Hoy",
                 month: "Mes",
                 week: "Semana",
                 day: "Día",
+                listWeek: "Agenda",
             },
 
             slotMinTime: "10:00:00",
@@ -964,6 +990,7 @@
             slotDuration: "00:30:00",
             allDaySlot: false,
             nowIndicator: true,
+            noEventsContent: "No hay citas en este rango.",
 
             events: "/api/admin/citas",
 
@@ -1008,7 +1035,8 @@
                 label.style.overflow = "hidden";
                 label.style.textOverflow = "ellipsis";
                 label.style.whiteSpace = "nowrap";
-                label.textContent = (arg.timeText ? arg.timeText + " " : "") + arg.event.title;
+                const esLista = arg.view.type.startsWith("list");
+                label.textContent = (!esLista && arg.timeText ? arg.timeText + " " : "") + arg.event.title;
                 wrap.appendChild(label);
 
                 return { domNodes: [wrap] };

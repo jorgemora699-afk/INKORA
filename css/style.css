@@ -2977,15 +2977,3 @@ button.booking-selected:hover::after {
         grid-template-columns: repeat(3, 1fr);
     }
 }
-
-.stat-card.clickable { cursor: pointer; user-select: none; }
-.stat-card.clickable.active {
-    border-color: var(--color-accent);
-    background: rgba(197, 164, 109, 0.08);
-}
-
-#calendar.filtro-pendiente .fc-event:not(.fc-event-pendiente),
-#calendar.filtro-confirmada .fc-event:not(.fc-event-confirmada),
-#calendar.filtro-hoy .fc-event:not(.fc-event-hoy) {
-    display: none;
-}
