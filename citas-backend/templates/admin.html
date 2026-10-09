@@ -89,7 +89,7 @@
             background: var(--color-bg-soft);
             border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
-            transition: border-color 0.3s ease, transform 0.3s ease;
+            transition: border-color 0.3s ease, transform 0.3s ease, background 0.3s ease;
         }
 
         .stat-card:hover {
@@ -127,6 +127,25 @@
         .stat-card.next {
             grid-column: span 2;
         }
+
+        /* ---- Tarjetas clicables (filtro) ---- */
+
+        .stat-card.clickable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .stat-card.clickable:focus-visible {
+            outline: 1px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        .stat-card.clickable.active {
+            border-color: var(--color-accent);
+            background: rgba(197, 164, 109, 0.08);
+        }
+
+        .stat-card.clickable.active span { color: var(--color-accent); }
 
         @media (max-width: 700px) {
             .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -402,6 +421,14 @@
             opacity: 0.18;
         }
 
+        /* ---- Filtro por tarjetas (oculta los eventos que no coinciden) ---- */
+
+        #calendar.filtro-pendiente .fc-event:not(.fc-event-pendiente),
+        #calendar.filtro-confirmada .fc-event:not(.fc-event-confirmada),
+        #calendar.filtro-hoy .fc-event:not(.fc-event-hoy) {
+            display: none;
+        }
+
         /* Tooltip */
         .fc-tooltip {
             position: fixed;
@@ -637,15 +664,15 @@
     <div class="wrap">
 
         <div class="stats-row">
-            <div class="stat-card accent">
+            <div class="stat-card accent clickable" data-filtro="hoy" role="button" tabindex="0" aria-pressed="false">
                 <strong id="statHoy">0</strong>
                 <span>Citas hoy</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" data-filtro="pendiente" role="button" tabindex="0" aria-pressed="false">
                 <strong id="statPendientes">0</strong>
                 <span>Pendientes</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" data-filtro="confirmada" role="button" tabindex="0" aria-pressed="false">
                 <strong id="statConfirmadas">0</strong>
                 <span>Confirmadas</span>
             </div>
@@ -824,6 +851,17 @@
     <script>
 
         /* =====================================================
+           UTILIDADES DE FECHA (hora local, no UTC)
+        ===================================================== */
+
+        const pad = (n) => String(n).padStart(2, "0");
+
+        // "YYYY-MM-DD" en hora local (evita el desfase de toISOString)
+        function fechaLocal(d) {
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        /* =====================================================
            TOASTS
         ===================================================== */
 
@@ -937,12 +975,15 @@
                 else if (props.estado === "confirmada") clases.push("fc-event-confirmada");
                 else if (!props.creada_por_cliente) clases.push("fc-event-manual");
 
-                if (props.estado === "pendiente" && props.creada_por_cliente && !vistas.has(String(arg.event.id))) {
-                    clases.push("fc-event-nuevo");
+                // Clase usada por el filtro de tarjetas
+                if (props.estado === "pendiente") clases.push("fc-event-pendiente");
+
+                if (arg.event.start && fechaLocal(arg.event.start) === fechaLocal(new Date())) {
+                    clases.push("fc-event-hoy");
                 }
 
-                if (filtroTexto && !arg.event.title.toLowerCase().includes(filtroTexto)) {
-                    clases.push("fc-event-dim");
+                if (props.estado === "pendiente" && props.creada_por_cliente && !vistas.has(String(arg.event.id))) {
+                    clases.push("fc-event-nuevo");
                 }
 
                 return clases;
@@ -988,6 +1029,8 @@
             },
 
             eventDidMount(info) {
+                info.el.dataset.titulo = info.event.title.toLowerCase();
+                aplicarBusquedaA(info.el);
                 adjuntarTooltip(info.event, info.el);
             },
 
@@ -1006,8 +1049,7 @@
 
         async function reagendarCita(event, revertFn) {
 
-            const fecha = event.start.toISOString().split("T")[0];
-            const pad = (n) => String(n).padStart(2, "0");
+            const fecha = fechaLocal(event.start);
             const hora = `${pad(event.start.getHours())}:${pad(event.start.getMinutes())}`;
 
             try {
@@ -1072,12 +1114,21 @@
         }
 
         /* =====================================================
-           BÚSQUEDA / FILTRO
+           BÚSQUEDA (atenúa los eventos que no coinciden)
         ===================================================== */
+
+        function aplicarBusquedaA(el) {
+            const coincide = !filtroTexto || (el.dataset.titulo || "").includes(filtroTexto);
+            el.classList.toggle("fc-event-dim", !coincide);
+        }
+
+        function aplicarBusqueda() {
+            calendarEl.querySelectorAll(".fc-event").forEach(aplicarBusquedaA);
+        }
 
         document.getElementById("searchInput").addEventListener("input", (e) => {
             filtroTexto = e.target.value.trim().toLowerCase();
-            calendar.render();
+            aplicarBusqueda();
         });
 
         /* =====================================================
@@ -1086,7 +1137,7 @@
 
         function actualizarResumen(events) {
 
-            const hoy = new Date().toISOString().split("T")[0];
+            const hoy = fechaLocal(new Date());
             const ahora = new Date();
 
             let citasHoy = 0;
@@ -1096,7 +1147,7 @@
 
             events.forEach(event => {
 
-                const fechaEvento = event.startStr.split("T")[0];
+                const fechaEvento = fechaLocal(event.start);
                 const estado = event.extendedProps.estado;
 
                 if (fechaEvento === hoy) citasHoy++;
@@ -1148,6 +1199,52 @@
             return `${fecha.toLocaleDateString("es-CO", { day: "numeric", month: "long" })} · ${hora}`;
 
         }
+
+        /* =====================================================
+           FILTRO POR TARJETAS DE RESUMEN
+        ===================================================== */
+
+        const ETIQUETAS_FILTRO = {
+            hoy: "citas de hoy",
+            pendiente: "citas pendientes",
+            confirmada: "citas confirmadas",
+        };
+
+        let filtroEstado = null;
+
+        function aplicarFiltroEstado(filtro) {
+
+            filtroEstado = (filtroEstado === filtro) ? null : filtro;
+
+            calendarEl.classList.remove("filtro-pendiente", "filtro-confirmada", "filtro-hoy");
+
+            document.querySelectorAll(".stat-card.clickable").forEach(c => {
+                const activa = c.dataset.filtro === filtroEstado;
+                c.classList.toggle("active", activa);
+                c.setAttribute("aria-pressed", activa ? "true" : "false");
+            });
+
+            if (filtroEstado) {
+                calendarEl.classList.add(`filtro-${filtroEstado}`);
+                toast(`Mostrando solo ${ETIQUETAS_FILTRO[filtroEstado]}.`, "info");
+            } else {
+                toast("Filtro quitado.", "info");
+            }
+
+        }
+
+        document.querySelectorAll(".stat-card.clickable").forEach(card => {
+
+            card.addEventListener("click", () => aplicarFiltroEstado(card.dataset.filtro));
+
+            card.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    aplicarFiltroEstado(card.dataset.filtro);
+                }
+            });
+
+        });
 
         /* =====================================================
            DETALLE DE CITA
@@ -1345,7 +1442,6 @@
 
             const fecha = fechaStr.split("T")[0];
 
-            const pad = (n) => String(n).padStart(2, "0");
             const tieneHora = fechaStr.includes("T");
             const hora = tieneHora
                 ? `${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`
@@ -1365,8 +1461,8 @@
 
         document.getElementById("btnNuevaCita").addEventListener("click", () => {
 
-            const hoy = new Date().toISOString().split("T")[0];
-            abrirCrear(hoy, new Date());
+            const ahora = new Date();
+            abrirCrear(fechaLocal(ahora), ahora);
 
         });
 
