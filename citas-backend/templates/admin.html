@@ -145,6 +145,34 @@
             background: rgba(197, 164, 109, 0.08);
         }
 
+        /* ---- Tarjeta "Próxima cita" clicable ---- */
+        .stat-card.abrible { cursor: pointer; user-select: none; }
+
+        .stat-card.abrible::after {
+            content: "→";
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            color: var(--color-accent);
+            font-size: 16px;
+            transition: transform 0.25s ease;
+        }
+
+        .stat-card.abrible:hover::after { transform: translateX(4px); }
+
+        .stat-card.abrible:focus-visible {
+            outline: 1px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        /* Sin próxima cita: no se comporta como botón */
+        .stat-card.abrible.vacia { cursor: default; }
+        .stat-card.abrible.vacia::after { display: none; }
+        .stat-card.abrible.vacia:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
         .stat-card.clickable.active span { color: var(--color-accent); }
 
         @media (max-width: 700px) {
@@ -296,6 +324,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        
 
         .btn-confirm.ready {
             background: rgba(197, 164, 109, 0.12);
@@ -314,6 +343,131 @@
             border: 1px solid var(--color-green);
             cursor: default;
         }
+
+        .btn-recordar {
+            display: none;
+            margin-top: 10px;
+            background: transparent;
+            color: var(--color-whatsapp);
+            border: 1px solid var(--color-whatsapp);
+        }
+
+        .btn-recordar:hover {
+            background: var(--color-whatsapp);
+            color: #fff;
+        }
+
+        .btn-recordar.sent {
+            color: var(--color-muted);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-recordar.sent:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--color-white);
+        }
+
+        /* =====================================================
+           BLOQUEOS DE HORARIO
+        ===================================================== */
+
+        .legend-dot.dot-bloqueo { background: rgba(226, 143, 143, 0.55); }
+
+        #calendar .fc-bg-event.fc-bloqueo {
+            opacity: 1;
+            background: repeating-linear-gradient(
+                135deg,
+                rgba(226, 143, 143, 0.16) 0 6px,
+                rgba(226, 143, 143, 0.06) 6px 12px
+            );
+        }
+
+        /* En la vista Mes solo se pintan los días completos; las franjas (almuerzo) no */
+        #calendar .fc-dayGridMonth-view .fc-bloqueo-parcial { display: none; }
+
+        .fc-bloqueo-label {
+            display: block;
+            padding: 3px 6px;
+            color: #e28f8f;
+            font-size: 10px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .dias-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .dias-chips label.dia-chip {
+            display: inline-block;
+            margin: 0;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+        }
+
+        .dia-chip input { display: none; }
+
+        .dia-chip span {
+            display: inline-block;
+            min-width: 40px;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--color-muted);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .dia-chip input:checked + span {
+            color: var(--color-accent);
+            border-color: var(--color-accent);
+            background: rgba(197, 164, 109, 0.12);
+        }
+
+        .horas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .bloq-aviso {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border: 1px solid rgba(220, 80, 80, 0.4);
+            background: rgba(220, 80, 80, 0.08);
+            color: #e28f8f;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .bloq-lista-titulo {
+            margin: 28px 0 4px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        .bloq-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .bloq-item strong { display: block; font-size: 13px; font-weight: 600; }
+
+        .bloq-item small {
+            display: block;
+            margin-top: 3px;
+            color: var(--color-muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .bloq-item .btn { padding: 8px 12px; flex-shrink: 0; }
+
+        .bloq-vacio { padding: 12px 0; color: var(--color-muted); font-size: 12px; }
 
         /* =====================================================
            OVERRIDES DE FULLCALENDAR PARA TEMA OSCURO
@@ -423,9 +577,9 @@
 
         /* ---- Filtro por tarjetas (oculta los eventos que no coinciden) ---- */
 
-        #calendar.filtro-pendiente .fc-event:not(.fc-event-pendiente),
-        #calendar.filtro-confirmada .fc-event:not(.fc-event-confirmada),
-        #calendar.filtro-hoy .fc-event:not(.fc-event-hoy) {
+        #calendar.filtro-pendiente .fc-event:not(.fc-bg-event):not(.fc-event-pendiente),
+        #calendar.filtro-confirmada .fc-event:not(.fc-bg-event):not(.fc-event-confirmada),
+        #calendar.filtro-hoy .fc-event:not(.fc-bg-event):not(.fc-event-hoy) {
             display: none;
         }
 
@@ -453,6 +607,49 @@
         #calendar .fc-list-event-time { color: var(--color-muted); }
         #calendar .fc-list-event-title { color: var(--color-white); }
         #calendar .fc-list-empty { background: var(--color-bg-soft); color: var(--color-muted); }
+        
+        /* ---- Badge: pendientes sin contactar ---- */
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 4px 10px;
+            background: rgba(226, 143, 143, 0.12);
+            border: 1px solid rgba(226, 143, 143, 0.5);
+            border-radius: 20px;
+            color: #e28f8f;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+
+        .stat-badge[hidden] { display: none; }
+
+        .stat-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #e28f8f;
+        }
+
+        .stat-badge:hover,
+        .stat-badge.activa { background: rgba(226, 143, 143, 0.25); }
+
+        .stat-badge.urgente::before { animation: pulsoBadge 1.4s ease-out infinite; }
+
+        @keyframes pulsoBadge {
+            0%   { box-shadow: 0 0 0 0 rgba(226, 143, 143, 0.7); }
+            100% { box-shadow: 0 0 0 8px rgba(226, 143, 143, 0); }
+        }
+
+        #calendar.filtro-sincontactar .fc-event:not(.fc-bg-event):not(.fc-event-sincontactar) {
+            display: none;
+        }
 
         /* Tooltip */
         .fc-tooltip {
@@ -681,6 +878,7 @@
         </div>
 
         <div class="header-right">
+            <button class="btn btn-ghost" id="btnBloqueos">Bloqueos</button>
             <button class="btn btn-primary" id="btnNuevaCita">+ Nueva cita</button>
             <a class="logout-link" href="{{ url_for('logout') }}">Cerrar sesión →</a>
         </div>
@@ -696,12 +894,13 @@
             <div class="stat-card clickable" data-filtro="pendiente" role="button" tabindex="0" aria-pressed="false">
                 <strong id="statPendientes">0</strong>
                 <span>Pendientes</span>
+                <button type="button" class="stat-badge" id="badgeSinContactar" hidden></button>
             </div>
             <div class="stat-card clickable" data-filtro="confirmada" role="button" tabindex="0" aria-pressed="false">
                 <strong id="statConfirmadas">0</strong>
                 <span>Confirmadas</span>
             </div>
-            <div class="stat-card next">
+            <div class="stat-card next abrible vacia" id="cardProxima" role="button" tabindex="0" aria-disabled="true">
                 <span>Próxima cita</span>
                 <strong id="statProxima" style="font-size: 20px; margin-top: 6px;">—</strong>
                 <small id="statProximaSub"></small>
@@ -715,6 +914,7 @@
                 <div class="legend-item"><span class="legend-dot dot-confirmada"></span> Confirmada</div>
                 <div class="legend-item"><span class="legend-dot dot-cancelada"></span> Cancelada</div>
                 <div class="legend-item"><span class="legend-dot dot-manual"></span> Creada manualmente</div>
+                <div class="legend-item"><span class="legend-dot dot-bloqueo"></span> Bloqueado</div>
             </div>
 
             <div class="search-box">
@@ -751,6 +951,11 @@
                     <span id="confirmIcon">○</span>
                     <span id="confirmLabel">Confirmar cita (contacta primero)</span>
                 </button>
+
+                <a class="btn-whatsapp btn-recordar" id="btnRecordar" href="#" target="_blank">
+                    <span id="recordarIcon">🔔</span>
+                    <span id="recordarLabel">Recordar por WhatsApp</span>
+                </a>
             </div>
 
             <div class="modal-row">
@@ -760,7 +965,7 @@
 
             <div class="modal-row">
                 <label>Duración</label>
-                <p id="detalleDuracion"></p>
+                <select id="detalleDuracion"></select>
             </div>
 
             <div class="modal-row">
@@ -869,6 +1074,81 @@
         </div>
     </div>
 
+    <!-- ============ MODAL: BLOQUEOS DE HORARIO ============ -->
+
+    <div class="modal-overlay" id="modalBloqueos">
+        <div class="modal-box">
+
+            <h2>Bloqueos de horario</h2>
+            <span class="modal-subhead">
+                Los clientes no podrán agendar en estas franjas. Tú sí puedes crear citas manuales dentro de ellas.
+            </span>
+
+            <div class="bloq-aviso" id="bloqAviso"></div>
+
+            <div class="modal-row">
+                <label>Tipo de bloqueo</label>
+                <select id="bloqTipo">
+                    <option value="franja">Franja del día (ej. almuerzo)</option>
+                    <option value="dias">Día libre o vacaciones</option>
+                    <option value="semanal">Día de la semana cerrado (ej. domingos)</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
+                <label>Desde</label>
+                <input type="date" id="bloqFechaInicio">
+            </div>
+
+            <div class="modal-row">
+                <label id="bloqHastaLabel">Hasta</label>
+                <input type="date" id="bloqFechaFin">
+            </div>
+
+            <div class="modal-row" data-bq="franja">
+                <div class="horas-grid">
+                    <div>
+                        <label>Hora inicio</label>
+                        <input type="time" id="bloqHoraInicio">
+                    </div>
+                    <div>
+                        <label>Hora fin</label>
+                        <input type="time" id="bloqHoraFin">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-row" data-bq="franja semanal">
+                <label id="bloqDiasLabel">Días de la semana</label>
+                <div class="dias-chips" id="bloqDias">
+                    <label class="dia-chip"><input type="checkbox" value="0"><span>Lun</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="1"><span>Mar</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="2"><span>Mié</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="3"><span>Jue</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="4"><span>Vie</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="5"><span>Sáb</span></label>
+                    <label class="dia-chip"><input type="checkbox" value="6"><span>Dom</span></label>
+                </div>
+            </div>
+
+            <div class="modal-row">
+                <label>Motivo (opcional)</label>
+                <input type="text" id="bloqMotivo" placeholder="Almuerzo, vacaciones...">
+            </div>
+
+            <div class="modal-actions">
+                <div></div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-ghost" id="btnCerrarBloqueos">Cerrar</button>
+                    <button class="btn btn-primary" id="btnCrearBloqueo">Agregar bloqueo</button>
+                </div>
+            </div>
+
+            <div class="bloq-lista-titulo">Bloqueos activos</div>
+            <div id="bloqLista"></div>
+
+        </div>
+    </div>
 
     <div class="toast-stack" id="toastStack"></div>
 
@@ -884,6 +1164,33 @@
         // "YYYY-MM-DD" en hora local (evita el desfase de toISOString)
         function fechaLocal(d) {
             return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function formatearDuracion(min) {
+            const h = Math.floor(min / 60);
+            const m = min % 60;
+            let texto = "";
+            if (h > 0) texto += `${h}h `;
+            if (m > 0 || h === 0) texto += `${m}min`;
+            return texto.trim();
+        }
+
+        // Opciones de 30 min hasta 8 h, más la duración actual si cae fuera de esa lista
+        function llenarSelectDuracion(select, actual) {
+            const valores = new Set();
+            for (let m = 30; m <= 480; m += 30) valores.add(m);
+            valores.add(actual);
+
+            select.innerHTML = "";
+
+            [...valores].sort((a, b) => a - b).forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = String(m);
+                opt.textContent = formatearDuracion(m);
+                select.appendChild(opt);
+            });
+
+            select.value = String(actual);
         }
 
         /* =====================================================
@@ -908,27 +1215,19 @@
 
         }
 
-        /* =====================================================
-           CONTACTOS YA HECHOS / CITAS VISTAS (localStorage)
-        ===================================================== */
-
-        const LS_CONTACTADAS = "inkora_contactadas";
-        const LS_VISTAS = "inkora_citas_vistas";
-
-        function leerSet(clave) {
+        async function patchCita(id, cambios) {
             try {
-                return new Set(JSON.parse(localStorage.getItem(clave) || "[]"));
+                const r = await fetch(`/api/admin/citas/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(cambios),
+                });
+                return r.ok;
             } catch {
-                return new Set();
+                return false;
             }
         }
 
-        function guardarSet(clave, set) {
-            localStorage.setItem(clave, JSON.stringify([...set]));
-        }
-
-        let contactadas = leerSet(LS_CONTACTADAS);
-        let vistas = leerSet(LS_VISTAS);
 
         /* =====================================================
            ANIMACIÓN DE CONTEO
@@ -961,6 +1260,15 @@
         let citaSeleccionadaEvent = null;
         let todosLosEventos = [];
         let filtroTexto = "";
+        let proximaCita = null;
+
+        const HORAS_URGENTE = 48;
+
+        function esSinContactar(event) {
+            return event.extendedProps.estado === "pendiente"
+                && event.start > new Date()
+                && !event.extendedProps.contactada;
+        }
 
         const calendarEl = document.getElementById("calendar");
 
@@ -971,7 +1279,7 @@
             firstDay: 1,
             editable: true,
             eventStartEditable: true,
-            eventDurationEditable: false,
+            eventDurationEditable: true,
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
@@ -992,10 +1300,14 @@
             nowIndicator: true,
             noEventsContent: "No hay citas en este rango.",
 
-            events: "/api/admin/citas",
+            eventSources: [
+                { url: "/api/admin/citas" },
+                { events: bloqueosComoEventos },
+            ],
 
             eventClassNames(arg) {
                 const props = arg.event.extendedProps;
+                if (props.esBloqueo) return [];
                 const clases = [];
 
                 if (props.estado === "cancelada") clases.push("fc-event-cancelada");
@@ -1005,11 +1317,13 @@
                 // Clase usada por el filtro de tarjetas
                 if (props.estado === "pendiente") clases.push("fc-event-pendiente");
 
+                if (esSinContactar(arg.event)) clases.push("fc-event-sincontactar");
+
                 if (arg.event.start && fechaLocal(arg.event.start) === fechaLocal(new Date())) {
                     clases.push("fc-event-hoy");
                 }
 
-                if (props.estado === "pendiente" && props.creada_por_cliente && !vistas.has(String(arg.event.id))) {
+                if (props.estado === "pendiente" && props.creada_por_cliente && !props.vista) {
                     clases.push("fc-event-nuevo");
                 }
 
@@ -1019,6 +1333,12 @@
             eventContent(arg) {
 
                 const props = arg.event.extendedProps;
+                if (props.esBloqueo) {
+                    const etiqueta = document.createElement("span");
+                    etiqueta.className = "fc-bloqueo-label";
+                    etiqueta.textContent = arg.event.title;
+                    return { domNodes: [etiqueta] };
+                }
                 const wrap = document.createElement("div");
                 wrap.style.display = "flex";
                 wrap.style.alignItems = "center";
@@ -1044,8 +1364,12 @@
             },
 
             eventClick(info) {
-                marcarVista(info.event.id);
-                abrirDetalle(info.event);
+                const ev = info.event;
+                if (!ev.extendedProps.vista) {
+                    ev.setExtendedProp("vista", true);   // quita el puntico al instante
+                    patchCita(ev.id, { vista: true });
+                }
+                abrirDetalle(ev);
             },
 
             dateClick(info) {
@@ -1056,24 +1380,25 @@
                 reagendarCita(info.event, info.revert);
             },
 
+            eventResize(info) {
+                cambiarDuracion(info.event, info.revert);
+            },
+
             eventDidMount(info) {
+                if (info.event.extendedProps.esBloqueo) return;
                 info.el.dataset.titulo = info.event.title.toLowerCase();
                 aplicarBusquedaA(info.el);
                 adjuntarTooltip(info.event, info.el);
             },
 
             eventsSet(events) {
-                todosLosEventos = events;
-                actualizarResumen(events);
+                const citas = events.filter(e => !e.extendedProps.esBloqueo);
+                todosLosEventos = citas;
+                actualizarResumen(citas);
             },
         });
 
         calendar.render();
-
-        function marcarVista(id) {
-            vistas.add(String(id));
-            guardarSet(LS_VISTAS, vistas);
-        }
 
         async function reagendarCita(event, revertFn) {
 
@@ -1100,6 +1425,39 @@
 
             } catch (e) {
                 toast("Error de conexión al mover la cita.", "error");
+                revertFn();
+            }
+
+        }
+
+        async function cambiarDuracion(event, revertFn) {
+
+            if (!event.end) { revertFn(); return; }
+
+            const minutos = Math.round((event.end - event.start) / 60000);
+
+            if (minutos < 30) { revertFn(); return; }
+
+            try {
+
+                const respuesta = await fetch(`/api/admin/citas/${event.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ duracion_minutos: minutos }),
+                });
+
+                if (!respuesta.ok) {
+                    const data = await respuesta.json();
+                    toast(data.error || "No se pudo cambiar la duración.", "error");
+                    revertFn();
+                    return;
+                }
+
+                toast(`Duración actualizada a ${formatearDuracion(minutos)}.`, "success");
+                calendar.refetchEvents();
+
+            } catch (e) {
+                toast("Error de conexión al cambiar la duración.", "error");
                 revertFn();
             }
 
@@ -1151,7 +1509,7 @@
         }
 
         function aplicarBusqueda() {
-            calendarEl.querySelectorAll(".fc-event").forEach(aplicarBusquedaA);
+            calendarEl.querySelectorAll(".fc-event:not(.fc-bg-event)").forEach(aplicarBusquedaA);
         }
 
         document.getElementById("searchInput").addEventListener("input", (e) => {
@@ -1172,6 +1530,8 @@
             let pendientes = 0;
             let confirmadas = 0;
             let proxima = null;
+            let sinContactar = 0;
+            let urgentes = 0;
 
             events.forEach(event => {
 
@@ -1181,6 +1541,11 @@
                 if (fechaEvento === hoy) citasHoy++;
                 if (estado === "pendiente") pendientes++;
                 if (estado === "confirmada") confirmadas++;
+
+                if (esSinContactar(event)) {
+                    sinContactar++;
+                    if (event.start - ahora < HORAS_URGENTE * 3600000) urgentes++;
+                }
 
                 if (estado !== "cancelada" && event.start > ahora) {
                     if (!proxima || event.start < proxima.start) proxima = event;
@@ -1192,8 +1557,30 @@
             animarNumero(document.getElementById("statPendientes"), pendientes);
             animarNumero(document.getElementById("statConfirmadas"), confirmadas);
 
+            const badge = document.getElementById("badgeSinContactar");
+
+            if (sinContactar > 0) {
+                badge.hidden = false;
+                badge.textContent = `${sinContactar} sin contactar` +
+                    (urgentes > 0 ? ` · ${urgentes} urgente${urgentes > 1 ? "s" : ""}` : "");
+                badge.classList.toggle("urgente", urgentes > 0);
+            } else {
+                badge.hidden = true;
+
+                // Si el filtro estaba activo y ya no queda ninguna, lo quitamos
+                if (calendarEl.classList.contains("filtro-sincontactar")) {
+                    aplicarFiltroEstado("sincontactar");
+                }
+            }
+
             const statProxima = document.getElementById("statProxima");
             const statProximaSub = document.getElementById("statProximaSub");
+
+            const cardProxima = document.getElementById("cardProxima");
+
+            proximaCita = proxima;
+            cardProxima.classList.toggle("vacia", !proxima);
+            cardProxima.setAttribute("aria-disabled", proxima ? "false" : "true");
 
             if (proxima) {
                 statProxima.textContent = proxima.title;
@@ -1236,6 +1623,7 @@
             hoy: "citas de hoy",
             pendiente: "citas pendientes",
             confirmada: "citas confirmadas",
+            sincontactar: "citas sin contactar",
         };
 
         let filtroEstado = null;
@@ -1244,13 +1632,15 @@
 
             filtroEstado = (filtroEstado === filtro) ? null : filtro;
 
-            calendarEl.classList.remove("filtro-pendiente", "filtro-confirmada", "filtro-hoy");
+            calendarEl.classList.remove("filtro-pendiente", "filtro-confirmada", "filtro-hoy", "filtro-sincontactar");
+            document.getElementById("badgeSinContactar").classList.toggle("activa", filtroEstado === "sincontactar");
 
             document.querySelectorAll(".stat-card.clickable").forEach(c => {
                 const activa = c.dataset.filtro === filtroEstado;
                 c.classList.toggle("active", activa);
                 c.setAttribute("aria-pressed", activa ? "true" : "false");
             });
+
 
             if (filtroEstado) {
                 calendarEl.classList.add(`filtro-${filtroEstado}`);
@@ -1273,6 +1663,47 @@
             });
 
         });
+
+        const badgeEl = document.getElementById("badgeSinContactar");
+
+        badgeEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            aplicarFiltroEstado("sincontactar");
+        });
+
+        // Evita que Enter/Espacio sobre el badge active también el filtro de la tarjeta
+        badgeEl.addEventListener("keydown", (e) => e.stopPropagation());
+
+        /* ---- Tarjeta "Próxima cita": abre su detalle ---- */
+
+        function abrirProximaCita() {
+
+            const ev = proximaCita;
+            if (!ev) return;
+
+            // Igual que al tocar la cita en el calendario: se marca como vista
+            if (!ev.extendedProps.vista) {
+                ev.setExtendedProp("vista", true);
+                patchCita(ev.id, { vista: true });
+            }
+
+            abrirDetalle(ev);
+
+        }
+
+        const cardProxima = document.getElementById("cardProxima");
+
+        cardProxima.addEventListener("click", abrirProximaCita);
+
+        cardProxima.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                abrirProximaCita();
+            }
+        });
+
+        // Refresca el "en X min" de la próxima cita cada minuto
+        setInterval(() => actualizarResumen(todosLosEventos), 60000);
 
         /* =====================================================
            DETALLE DE CITA
@@ -1302,12 +1733,7 @@
             document.getElementById("detalleTipo").value = props.tipo_cita || "valoracion";
             document.getElementById("detalleNotas").value = props.notas || "";
 
-            const horas = Math.floor(props.duracion_minutos / 60);
-            const minutos = props.duracion_minutos % 60;
-            let duracionTexto = "";
-            if (horas > 0) duracionTexto += `${horas}h `;
-            if (minutos > 0 || horas === 0) duracionTexto += `${minutos}min`;
-            document.getElementById("detalleDuracion").textContent = duracionTexto.trim();
+            llenarSelectDuracion(document.getElementById("detalleDuracion"), props.duracion_minutos);
 
             // ---- Botón de WhatsApp ----
             const wppBtn = document.getElementById("btnContactarWpp");
@@ -1332,12 +1758,15 @@
 
             wppBtn.onclick = () => {
                 if (!telLimpio) return;
-                contactadas.add(String(event.id));
-                guardarSet(LS_CONTACTADAS, contactadas);
-                actualizarBotonConfirmar(props.estado);
+                if (!event.extendedProps.contactada) {
+                    event.setExtendedProp("contactada", true);
+                    patchCita(event.id, { contactada: true });
+                }
+                actualizarBotonConfirmar(event.extendedProps.estado);
             };
 
             actualizarBotonConfirmar(props.estado);
+            actualizarBotonRecordar(event);
 
             document.getElementById("modalDetalle").classList.add("active");
 
@@ -1349,7 +1778,7 @@
             const icon = document.getElementById("confirmIcon");
             const label = document.getElementById("confirmLabel");
 
-            const yaContactado = contactadas.has(String(citaSeleccionadaId));
+            const yaContactado = !!(citaSeleccionadaEvent && citaSeleccionadaEvent.extendedProps.contactada);
 
             btn.classList.remove("ready", "done");
 
@@ -1368,12 +1797,61 @@
 
         }
 
+        function actualizarBotonRecordar(event) {
+
+            const btn = document.getElementById("btnRecordar");
+            const icon = document.getElementById("recordarIcon");
+            const label = document.getElementById("recordarLabel");
+            const props = event.extendedProps;
+
+            const manana = new Date();
+            manana.setDate(manana.getDate() + 1);
+
+            const esManana = fechaLocal(event.start) === fechaLocal(manana);
+            const telLimpio = (props.telefono || "").replace(/\D/g, "");
+
+            // Solo citas confirmadas, de mañana y con teléfono
+            if (props.estado !== "confirmada" || !esManana || !telLimpio) {
+                btn.style.display = "none";
+                return;
+            }
+
+            const horaTexto = event.start.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+            const tipoTexto = props.tipo_cita === "tatuaje" ? "tu sesión de tatuaje" : "tu valoración";
+
+            const mensaje =
+                `Hola ${event.title}, te recuerdo que mañana a las ${horaTexto} tienes ${tipoTexto} ` +
+                `en Daniel Tatto Ink. ¡Te esperamos!`;
+
+            btn.href = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
+            btn.style.display = "flex";
+
+            if (props.recordada) {
+                btn.classList.add("sent");
+                icon.textContent = "✓";
+                label.textContent = "Recordatorio enviado (reenviar)";
+            } else {
+                btn.classList.remove("sent");
+                icon.textContent = "🔔";
+                label.textContent = "Recordar por WhatsApp";
+            }
+
+            btn.onclick = () => {
+                if (!event.extendedProps.recordada) {
+                    event.setExtendedProp("recordada", true);
+                    patchCita(event.id, { recordada: true });
+                }
+                actualizarBotonRecordar(event);
+            };
+
+        }
+
         document.getElementById("btnConfirmarCita").addEventListener("click", async () => {
 
             const btn = document.getElementById("btnConfirmarCita");
             if (btn.classList.contains("done")) return;
 
-            if (!contactadas.has(String(citaSeleccionadaId))) {
+            if (!citaSeleccionadaEvent.extendedProps.contactada) {
                 toast("Contacta al cliente por WhatsApp antes de confirmar.", "error");
                 return;
             }
@@ -1385,7 +1863,7 @@
                 const respuesta = await fetch(`/api/admin/citas/${citaSeleccionadaId}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ estado: "confirmada" }),
+                    body: JSON.stringify({ estado: "confirmada", contactada: true }),
                 });
 
                 if (!respuesta.ok) {
@@ -1394,7 +1872,9 @@
                     return;
                 }
 
+                citaSeleccionadaEvent.setExtendedProp("estado", "confirmada");
                 actualizarBotonConfirmar("confirmada");
+                actualizarBotonRecordar(citaSeleccionadaEvent);
                 document.getElementById("detalleBadge").className = "status-badge badge-confirmada";
                 toast("Cita confirmada.", "success");
                 calendar.refetchEvents();
@@ -1418,13 +1898,14 @@
             const estado = document.getElementById("detalleEstado").value;
             const notas = document.getElementById("detalleNotas").value;
             const tipo_cita = document.getElementById("detalleTipo").value;
+            const duracion_minutos = Number(document.getElementById("detalleDuracion").value);
 
             try {
 
                 const respuesta = await fetch(`/api/admin/citas/${citaSeleccionadaId}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ estado, notas, tipo_cita }),
+                    body: JSON.stringify({ estado, notas, tipo_cita, duracion_minutos }),
                 });
 
                 if (!respuesta.ok) {
@@ -1461,6 +1942,309 @@
 
         });
 
+        
+        /* =====================================================
+           BLOQUEOS DE HORARIO
+        ===================================================== */
+
+        const NOMBRES_DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+        function fechaCorta(iso) {
+            const [y, m, d] = iso.split("-").map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString("es-CO", { day: "numeric", month: "short" });
+        }
+
+        // Convierte los bloqueos (que pueden ser recurrentes) en eventos de fondo
+        // para el rango visible del calendario.
+        async function bloqueosComoEventos(info) {
+
+            const respuesta = await fetch("/api/admin/bloqueos");
+            if (!respuesta.ok) throw new Error("No se pudieron cargar los bloqueos");
+
+            const bloqueos = await respuesta.json();
+            const eventos = [];
+
+            const cursor = new Date(info.start.getFullYear(), info.start.getMonth(), info.start.getDate());
+
+            for (; cursor < info.end; cursor.setDate(cursor.getDate() + 1)) {
+
+                const f = fechaLocal(cursor);
+                const diaSemana = (cursor.getDay() + 6) % 7;   // 0 = lunes, igual que el backend
+
+                bloqueos.forEach(b => {
+
+                    if (f < b.fecha_inicio) return;
+                    if (b.fecha_fin && f > b.fecha_fin) return;
+                    if (b.dias_semana.length && !b.dias_semana.includes(diaSemana)) return;
+
+                    const parcial = !!b.hora_inicio;
+
+                    eventos.push({
+                        id: `bloqueo-${b.id}-${f}`,
+                        title: b.motivo || "Bloqueado",
+                        start: `${f}T${parcial ? b.hora_inicio : "00:00"}:00`,
+                        end: `${f}T${parcial ? b.hora_fin : "23:59"}:00`,
+                        display: "background",
+                        classNames: ["fc-bloqueo", parcial ? "fc-bloqueo-parcial" : "fc-bloqueo-dia"],
+                        extendedProps: { esBloqueo: true, bloqueoId: b.id },
+                    });
+
+                });
+
+            }
+
+            return eventos;
+
+        }
+
+        function describirBloqueo(b) {
+
+            const partes = [];
+
+            partes.push(b.hora_inicio ? `${b.hora_inicio} a ${b.hora_fin}` : "Día completo");
+
+            if (b.dias_semana.length) {
+                partes.push(b.dias_semana.map(d => NOMBRES_DIAS[d]).join(", "));
+            } else if (b.hora_inicio) {
+                partes.push("todos los días");
+            }
+
+            if (!b.fecha_fin) {
+                partes.push(`desde ${fechaCorta(b.fecha_inicio)}, sin fecha final`);
+            } else if (b.fecha_fin === b.fecha_inicio) {
+                partes.push(fechaCorta(b.fecha_inicio));
+            } else {
+                partes.push(`${fechaCorta(b.fecha_inicio)} → ${fechaCorta(b.fecha_fin)}`);
+            }
+
+            return partes.join(" · ");
+
+        }
+
+        async function cargarListaBloqueos() {
+
+            const cont = document.getElementById("bloqLista");
+            cont.innerHTML = "";
+
+            let bloqueos = [];
+
+            try {
+                const respuesta = await fetch("/api/admin/bloqueos");
+                if (!respuesta.ok) throw new Error();
+                bloqueos = await respuesta.json();
+            } catch {
+                cont.innerHTML = `<div class="bloq-vacio">No se pudieron cargar los bloqueos.</div>`;
+                return;
+            }
+
+            if (!bloqueos.length) {
+                cont.innerHTML = `<div class="bloq-vacio">No hay bloqueos activos.</div>`;
+                return;
+            }
+
+            bloqueos.forEach(b => {
+
+                const fila = document.createElement("div");
+                fila.className = "bloq-item";
+
+                const info = document.createElement("div");
+                const titulo = document.createElement("strong");
+                const detalle = document.createElement("small");
+                titulo.textContent = b.motivo || "Bloqueo";
+                detalle.textContent = describirBloqueo(b);
+                info.appendChild(titulo);
+                info.appendChild(detalle);
+
+                const borrar = document.createElement("button");
+                borrar.className = "btn btn-danger";
+                borrar.textContent = "Quitar";
+                borrar.addEventListener("click", () => eliminarBloqueo(b));
+
+                fila.appendChild(info);
+                fila.appendChild(borrar);
+                cont.appendChild(fila);
+
+            });
+
+        }
+
+        async function eliminarBloqueo(b) {
+
+            if (!confirm(`¿Quitar "${b.motivo || "este bloqueo"}"? Los clientes podrán agendar de nuevo en esa franja.`)) return;
+
+            try {
+
+                const respuesta = await fetch(`/api/admin/bloqueos/${b.id}`, { method: "DELETE" });
+
+                if (!respuesta.ok) {
+                    toast("No se pudo quitar el bloqueo.", "error");
+                    return;
+                }
+
+                toast("Bloqueo quitado.", "success");
+                cargarListaBloqueos();
+                calendar.refetchEvents();
+
+            } catch {
+                toast("Error de conexión al quitar el bloqueo.", "error");
+            }
+
+        }
+
+        // Muestra u oculta los campos según el tipo de bloqueo
+        function aplicarTipoBloqueo() {
+
+            const tipo = document.getElementById("bloqTipo").value;
+
+            document.querySelectorAll("[data-bq]").forEach(el => {
+                el.style.display = el.dataset.bq.split(" ").includes(tipo) ? "" : "none";
+            });
+
+            document.getElementById("bloqHastaLabel").textContent =
+                tipo === "dias" ? "Hasta (vacío = solo ese día)" : "Hasta (vacío = sin fecha final)";
+
+            document.getElementById("bloqDiasLabel").textContent =
+                tipo === "franja" ? "Días de la semana (vacío = todos)" : "Días de la semana";
+
+        }
+
+        function abrirBloqueos() {
+
+            document.getElementById("bloqTipo").value = "franja";
+            document.getElementById("bloqFechaInicio").value = fechaLocal(new Date());
+            document.getElementById("bloqFechaFin").value = "";
+            document.getElementById("bloqHoraInicio").value = "13:00";
+            document.getElementById("bloqHoraFin").value = "14:00";
+            document.getElementById("bloqMotivo").value = "";
+            document.querySelectorAll("#bloqDias input").forEach(i => { i.checked = false; });
+            document.getElementById("bloqAviso").style.display = "none";
+
+            aplicarTipoBloqueo();
+            cargarListaBloqueos();
+
+            document.getElementById("modalBloqueos").classList.add("active");
+
+        }
+
+        document.getElementById("btnBloqueos").addEventListener("click", abrirBloqueos);
+        document.getElementById("bloqTipo").addEventListener("change", aplicarTipoBloqueo);
+
+        document.getElementById("btnCerrarBloqueos").addEventListener("click", () => {
+            document.getElementById("modalBloqueos").classList.remove("active");
+        });
+
+        document.getElementById("modalBloqueos").addEventListener("click", (e) => {
+            if (e.target.id === "modalBloqueos") e.currentTarget.classList.remove("active");
+        });
+
+        function mostrarAvisoCitasAfectadas(citas) {
+
+            const aviso = document.getElementById("bloqAviso");
+            aviso.innerHTML = "";
+
+            if (!citas.length) {
+                aviso.style.display = "none";
+                return;
+            }
+
+            const titulo = document.createElement("div");
+            titulo.textContent = citas.length === 1
+                ? "Ojo: hay 1 cita ya agendada dentro de este bloqueo. Sigue en tu agenda, muévela o cancélala:"
+                : `Ojo: hay ${citas.length} citas ya agendadas dentro de este bloqueo. Siguen en tu agenda, muévelas o cancélalas:`;
+            aviso.appendChild(titulo);
+
+            citas.forEach(c => {
+                const linea = document.createElement("div");
+                linea.textContent = `• ${c.nombre_cliente} — ${fechaCorta(c.fecha)} ${c.hora}`;
+                aviso.appendChild(linea);
+            });
+
+            aviso.style.display = "block";
+
+        }
+
+        document.getElementById("btnCrearBloqueo").addEventListener("click", async () => {
+
+            const tipo = document.getElementById("bloqTipo").value;
+            const fechaInicio = document.getElementById("bloqFechaInicio").value;
+            const fechaFin = document.getElementById("bloqFechaFin").value;
+            const horaInicio = document.getElementById("bloqHoraInicio").value;
+            const horaFin = document.getElementById("bloqHoraFin").value;
+            const motivo = document.getElementById("bloqMotivo").value.trim();
+
+            const dias = [...document.querySelectorAll("#bloqDias input:checked")].map(i => Number(i.value));
+
+            if (!fechaInicio) {
+                toast("Elige la fecha de inicio.", "error");
+                return;
+            }
+
+            if (fechaFin && fechaFin < fechaInicio) {
+                toast("La fecha final no puede ser anterior a la inicial.", "error");
+                return;
+            }
+
+            const payload = { fecha_inicio: fechaInicio, motivo };
+
+            if (tipo === "franja") {
+
+                if (!horaInicio || !horaFin) {
+                    toast("Indica la hora de inicio y la de fin.", "error");
+                    return;
+                }
+
+                if (horaFin <= horaInicio) {
+                    toast("La hora final debe ser posterior a la inicial.", "error");
+                    return;
+                }
+
+                Object.assign(payload, {
+                    fecha_fin: fechaFin || null,
+                    hora_inicio: horaInicio,
+                    hora_fin: horaFin,
+                    dias_semana: dias,
+                });
+
+            } else if (tipo === "dias") {
+
+                payload.fecha_fin = fechaFin || fechaInicio;
+
+            } else {
+
+                if (!dias.length) {
+                    toast("Elige al menos un día de la semana.", "error");
+                    return;
+                }
+
+                Object.assign(payload, { fecha_fin: fechaFin || null, dias_semana: dias });
+
+            }
+
+            try {
+
+                const respuesta = await fetch("/api/admin/bloqueos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    toast(data.error || "No se pudo crear el bloqueo.", "error");
+                    return;
+                }
+
+                toast("Bloqueo creado.", "success");
+                mostrarAvisoCitasAfectadas(data.citas_afectadas || []);
+                cargarListaBloqueos();
+                calendar.refetchEvents();
+
+            } catch {
+                toast("Error de conexión al crear el bloqueo.", "error");
+            }
+
+        });
 
         /* =====================================================
            CREAR CITA MANUAL
