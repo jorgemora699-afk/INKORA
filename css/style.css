@@ -372,6 +372,8 @@ button {
 .hero-word:nth-child(4) { animation-delay: 0.55s; }
 .hero-word:nth-child(5) { animation-delay: 0.7s; }
 .hero-word:nth-child(6) { animation-delay: 0.85s; }
+.hero-word:nth-child(7) { animation-delay: 0.95s; }
+.hero-word:nth-child(8) { animation-delay: 0.11s; }
 
 @keyframes wordReveal {
     to {
@@ -560,6 +562,14 @@ button {
 }
 
 .portfolio-item:nth-child(6) {
+    grid-column: span 3;
+}
+
+.portfolio-item:nth-child(7) {
+    grid-column: span 4;
+}
+
+.portfolio-item:nth-child(8) {
     grid-column: span 3;
 }
 
