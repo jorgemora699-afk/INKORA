@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <title>Daniel Tatto Ink</title>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0" stop-color="#1d1b17"/><stop offset="1" stop-color="#0a0a0a"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ecd7a6"/><stop offset="0.5" stop-color="#c5a46d"/><stop offset="1" stop-color="#8f7442"/>
+    </linearGradient>
+    <pattern id="hatch" width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0H46M0 0V46" stroke="#0a0a0a" stroke-opacity="0.34" stroke-width="3" fill="none"/>
+    </pattern>
+  </defs>
+  <circle cx="500" cy="500" r="500" fill="#0a0a0a"/>
+  <circle cx="500" cy="500" r="462" fill="none" stroke="#c5a46d" stroke-width="30"/>
+  <g transform="translate(500 500) scale(1.28) translate(-500 -500)">
+    <path d="M270 270H490C650 270 730 360 730 500C730 640 650 730 490 730H270ZM360 350V650H475C570 650 630 600 630 500C630 400 570 350 475 350Z" transform="translate(-16 14)" fill="#8f7442" fill-opacity="0.6" fill-rule="evenodd"/>
+    <path d="M270 270H490C650 270 730 360 730 500C730 640 650 730 490 730H270ZM360 350V650H475C570 650 630 600 630 500C630 400 570 350 475 350Z" fill="url(#gold)" fill-rule="evenodd"/>
+    <path d="M480 372C585 372 612 440 612 500C612 560 585 628 480 628C548 600 574 552 574 500C574 448 548 400 480 372Z" fill="#c5a46d"/>
+  </g>
+</svg>
